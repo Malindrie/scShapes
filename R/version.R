@@ -4,9 +4,9 @@
 #' @return ... Reports the version of the package:scShapes.
 #
 version <- function() {
-  cat("           ____\n")
+  cat("            ____\n")
   cat("          |     |\n")
-  cat("____ ____ |____ |____ ____ ____ ____ ____\n")
+  cat("____ ____ |____ |____ ____ ____ ____  ____\n")
   cat("[__  |        | |   | ___| |   ||___] [__\n")
   cat("___] |___ ____| |   ||___| |___||___  ___]\n")
   cat("                           |\n")
