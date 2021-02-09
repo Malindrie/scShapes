@@ -5,6 +5,9 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.com/Malindrie/scShapes.svg?branch=master)](https://travis-ci.com/Malindrie/scShapes)
+[![R-CMD-check](https://github.com/Malindrie/scShapes/workflows/R-CMD-check/badge.svg)](https://github.com/Malindrie/scShapes/actions)
 <!-- badges: end -->
 
 The goal of scShapes is to model and compare distribution shape profiles
