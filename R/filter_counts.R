@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-#' @import Matrix
+#' @importFrom Matrix Matrix
 #'
 #' @return An object of class \code{\link{Matrix}} with genes removed if
 #' they have more than \code{perc.zero} zeros.

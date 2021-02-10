@@ -22,7 +22,7 @@
 #'
 #' @export
 #'
-#' @import dplyr
+#' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
 #' @importFrom future.apply future_apply
 #' @importFrom pscl zeroinfl
@@ -36,7 +36,7 @@
 ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
 
   if(is.null(workers)) {
-    workers <- min(4, parallel::availableCores())
+    workers <- min(4, parallelly::availableCores())
   }
   if(is.null(seed)) {
     seed <- 0xBEEF
