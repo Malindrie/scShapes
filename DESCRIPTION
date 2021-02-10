@@ -6,6 +6,8 @@ Author: Malindrie Dharmaratne <malindrie@gmail.com>
 Maintainer: Malindrie Dharmaratne <malindrie@gmail.com>
 Description: We present a novel statistical method for modelling and 
               comparing distribution shape profiles of scRNA-sequencing data.
+NeedsCompilation: yes
+Imports: Matrix, stats, parallelly, future.apply, pscl, VGAM, dgof
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
