@@ -13,7 +13,8 @@
 #'
 #' @import Matrix
 #'
-#' @return An object of class \code{\link{Matrix-class}}
+#' @return An object of class \code{\link{Matrix}} with genes removed if
+#' they have more than \code{perc.zero} zeros.
 
 
 filter_counts <- function(counts, perc.zero = 0.1){
@@ -37,6 +38,9 @@ filter_counts <- function(counts, perc.zero = 0.1){
   counts <- counts[rowSums(counts) != 0,]
 
   counts <- counts[apply(counts, 1, function(x){sum(x == 0)}) < ncol(counts)*(1-perc.zero),]
+
+  #convert data matrix to sparse matrix
+  counts <- Matrix::Matrix(counts, sparse = TRUE)
 
   return(counts)
 }

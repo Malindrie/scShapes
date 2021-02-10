@@ -14,7 +14,8 @@ The rows of the matrix are genes and columns are samples/cells.}
 proportion of zeros per gene in the processed dataset.}
 }
 \value{
-An object of class \code{\link{Matrix-class}}
+An object of class \code{\link{Matrix}} with genes removed if
+they have more than \code{perc.zero} zeros.
 }
 \description{
 This function is used to preprocess matrix of read counts to
