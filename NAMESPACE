@@ -3,6 +3,7 @@
 export(filter_counts)
 export(ks_test)
 export(version)
+import(Rcpp)
 importFrom(Matrix,Matrix)
 importFrom(VGAM,rzinegbin)
 importFrom(dgof,ks.test)
