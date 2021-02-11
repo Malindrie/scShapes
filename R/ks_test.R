@@ -1,6 +1,6 @@
 #' ks_test
 #'
-#' this function is used to perform Kolmogorv-Smirnov test on the
+#' This function is used to perform Kolmogorv-Smirnov test on the
 #' filtered sparse counts matrix from \code{filter_counts} to select genes
 #' belonging to the family of ZINB distributions
 #'
@@ -25,13 +25,14 @@
 #' @import stats
 #' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
-#' @importFrom future.apply future_apply
+#' @importFrom future plan
+#' @importFrom future.apply future_lapply
 #' @importFrom pscl zeroinfl
 #' @importFrom VGAM rzinegbin
 #' @importFrom dgof ks.test
 #'
-#' @return @return List object containing the significant gene indices from the KS test,
-#' their adjusted p-values
+#' @return List object containing the p-values from the
+#' KS test,
 
 
 ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
@@ -45,27 +46,31 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
 
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)
-  if(is.null(formula_string)) {
+  if(is.null(formula)) {
     message(sprintf("Formulating the default additive model..."))
-    formula <- 'x ~ 1 |'
+    formula <- 'x ~ 1 '
     if(!identical(covariates, character(0))) {
       for (covar in covariates) {
-        formula <- paste(formula_string, sprintf(' + %s', covar))
+        formula <- paste(formula, sprintf(' + %s', covar))
       }
     }
   }
+  formula <- as.formula(formula)
 
   #set-up multisession
-  plan(multisession, workers = workers)
+  plan(future::multisession, workers = workers)
 
   #Calculate library size for each cell
   lib.size <- apply(counts,2, function(x) sum(x))
 
+  #convert data ti lists
+  fu <- apply(counts, 1, function (x) cbind(x,cexpr))
+
   #KS test with simulated p-values
-  KS_ZINB <- function(x, lib.size){
+  KS_ZINB <- function(data, formula, cexpr, lib.size){
 
     library(pscl)
-    m1 <- try(zeroinfl(formula, offset=log(lib.size), dist = "negbin"), silent = TRUE)
+    m1 <- try(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
 
     if(!(class(m1) == "try-error")){
       pi_ML = predict(m1, type = "zero")
@@ -81,7 +86,7 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
 
     if(!(class(ccc) == "character")){
       library(VGAM)
-      pp <- try(rzinegbin(n = length(x), size = ccc[2,], munb = ccc[3,], pstr0 = ccc[1,]), silent = TRUE)
+      pp <- try(rzinegbin(n = length(data$x), size = ccc[2,], munb = ccc[3,], pstr0 = ccc[1,]), silent = TRUE)
     }
     else {
       pp <- "NA"
@@ -90,7 +95,7 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
     if(!(class(pp) == "character")){
 
       library(dgof)
-      D <- try(ks.test(x, ecdf(pp), simulate.p.value = TRUE)$p.value, silent = TRUE)
+      D <- try(ks.test(data$x, ecdf(pp), simulate.p.value = TRUE)$p.value, silent = TRUE)
     }
     else {
       D <- "NA"
@@ -107,21 +112,7 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
     return(p_value)
   }
 
-  ks.pval.unadj <- future_apply(counts, MARGIN = 1L, FUN = KS_ZINB, lib.size <- lib.size, future.seed = seed)
-
-  #Remove genes that filed the KS test
-  ks.pval.unadj <- stack(ks.pval.unadj)
-  ks.pval.unadj$values <- as.numeric(ks.pval.unadj$values)
-  ks.pval.unadj <- ks.pval.unadj[!is.na(ks.pval.unadj$values), ]
-
-  ks.pval.unadj_vec <- as.numeric(ks.pval.unadj$values)
-  names(ks.pval.unadj_vec) <- ks.pval.unadj$ind
-
-  ks.pval <- p.adjust(ks.pval.unadj_vec, method="BH")
-
-  #Select genes that pass the KS test
-  sig_genes_ks <- which(ks.pval > 0.01)
-
-  return(list(genes=sig_genes_ks, p=ks.pval, p.unadj=ks.pval.unadj))
+  ks.pval.unadj <- future.apply::future_lapply(fu, FUN = KS_ZINB, formula <- formula, cexpr <- cexpr, lib.size <- lib.size, future.seed=TRUE)
+  return(ks.pval.unadj)
 
 }
