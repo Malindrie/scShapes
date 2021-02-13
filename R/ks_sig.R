@@ -13,7 +13,6 @@
 #'
 #' @export
 #'
-#' @import stats
 #'
 #' @return List object containing the significant gene indices from the KS test,
 #' their adjusted p-values

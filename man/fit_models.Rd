@@ -7,10 +7,11 @@
 fit_models(
   counts,
   cexpr,
+  lib.size,
   formula = NULL,
   workers = NULL,
   seed = NULL,
-  distr = NULL
+  model = NULL
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ The rows of the dataframe are the corresponding samples/cells from the counts
 matrix from \code{filter_counts}.
 The cells of the dataframe are the covariates to be included in the GLM.}
 
+\item{lib.size}{A numeric vector that contains the total number of counts
+per cell from the counts matrix from \code{filter_counts}.}
+
 \item{formula}{A regression formula to fit the covariates in the ZINB GLM.}
 
 \item{workers}{Number of workers to be used in parallel computation
@@ -34,8 +38,7 @@ using \code{future.apply}, with argument \code{multisession}}
 \item{distr}{A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)}
 }
 \value{
-List object containing the significant gene indices from the KS test,
-their adjusted p-values
+A list of models fitted by 'glm'
 }
 \description{
 This function is used to fit genes with GLM

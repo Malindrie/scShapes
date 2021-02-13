@@ -4,7 +4,7 @@
 \alias{ks_test}
 \title{ks_test}
 \usage{
-ks_test(counts, cexpr, formula = NULL, workers = NULL, seed = NULL)
+ks_test(counts, cexpr, lib.size, formula = NULL, workers = NULL, seed = NULL)
 }
 \arguments{
 \item{counts}{A non-negative integer matrix of scRNA-seq filtered read counts.
@@ -14,6 +14,9 @@ The rows of the matrix are genes and columns are samples/cells.}
 The rows of the dataframe are the corresponding samples/cells from the counts
 matrix from \code{filter_counts}.
 The cells of the dataframe are the covariates to be included in the GLM.}
+
+\item{lib.size}{A numeric vector that contains the total number of counts
+per cell from the counts matrix from \code{filter_counts}.}
 
 \item{formula}{A regression formula to fit the covariates in the ZINB GLM.}
 

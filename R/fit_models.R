@@ -11,6 +11,9 @@
 #' matrix from \code{filter_counts}.
 #' The cells of the dataframe are the covariates to be included in the GLM.
 #'
+#' @param lib.size A numeric vector that contains the total number of counts
+#' per cell from the counts matrix from \code{filter_counts}.
+#'
 #' @param formula A regression formula to fit the covariates in the ZINB GLM.
 #'
 #' @param workers Number of workers to be used in parallel computation
@@ -30,10 +33,9 @@
 #' @importFrom pscl zeroinfl
 #' @importFrom MASS glm.nb
 #'
-#' @return List object containing the significant gene indices from the KS test,
-#' their adjusted p-values
+#' @return A list of models fitted by 'glm'
 
-fit_models <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL, distr=NULL){
+fit_models <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed=NULL, model=NULL){
 
   if(is.null(workers)) {
     workers <- min(4, parallelly::availableCores())
@@ -46,48 +48,45 @@ fit_models <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL, dis
   covariates <- names(cexpr)
   if(is.null(formula)) {
     message(sprintf("Formulating the default additive model..."))
-    formula_uni <- 'x ~ 1'
-    formula_zi <- 'x ~ 1 | 1'
+    formula <- 'x ~ 1 '
     if(!identical(covariates, character(0))) {
       for (covar in covariates) {
-        formula_uni <- paste(formula_uni, sprintf(' + %s', covar))
-        formula_zi <- paste(formula_zi, sprintf(' + %s', covar))
+        formula <- paste(formula, sprintf(' + %s', covar))
       }
     }
   }
 
-  f_poi <- as.formula(formula_uni)
-  f_nb <- as.formula(paste(formula_uni, ' + offset(log(lib.size))'))
-  f_zip <- as.formula(formula_zi)
-  f_zinb <- as.formula(formula_zi)
-
+  f_oth <- as.formula(formula)
+  f_nb <- as.formula(paste(formula, ' + offset(log(lib.size))'))
 
   #set-up multisession
-  plan(multisession, workers = workers)
+  plan(future::multisession, workers = workers)
 
-  #Calculate library size for each cell
-  lib.size <- apply(counts,2, function(x) sum(x))
 
-  #Function to fit the 4 distributions
-  model_poi <- function(formula, data, lib.size){
+  #convert data to lists
+  gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
 
-    stats::glm(formula, data, offset=log(lib.size), family = "poisson")
+
+  #Fit the four distributions
+  model_poi <- function(data, formula, lib.size){
+    library(stats)
+    try(glm(formula, data, offset=log(lib.size), family = "poisson"), silent = TRUE)
   }
 
 
-  model_nb <- function(formula, data, lib.size){
+  model_nb <- function(data, formula, lib.size){
     library(MASS)
     try(glm.nb(formula, data), silent = TRUE)
   }
 
 
-  model_zip <- function(formula, data, lib.size){
+  model_zip <- function(data, formula, lib.size){
     library(pscl)
     try(zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"), silent = TRUE)
   }
 
 
-  model_zinb <- function(formula, data, lib.size){
+  model_zinb <- function(data, formula, lib.size){
     library(pscl)
     try(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
   }
@@ -95,74 +94,75 @@ fit_models <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL, dis
 
   fitting <- list()
 
-  if(is.null(model2fit) || 1 %in% model2fit) {
-    message('Fitting data with Poisson model...')
+  if(is.null(model) || 1 %in% model) {
+    message('Fitting sdata with Poisson model...')
     if(identical(covariates, character(0))) {
-      fitting[["P"]] <- glm
+      fitting[["P"]] <-   future.apply::future_lapply(gexpr,
+                                                      FUN = model_poi,
+                                                      formula = f_oth,
+                                                      lib.size = lib.size,
+                                                      future.seed=TRUE)
     } else {
-      fitting[["P"]] <- stan_glmer(f12,
-                                   family = poisson,
-                                   data = gexpr,
-                                   offset = exposure,
-                                   cores = nCores,
-                                   seed = seed,
-                                   refresh = 0)
+      fitting[["P"]] <- future.apply::future_lapply(gexpr,
+                                                    FUN = model_poi,
+                                                    formula = f_oth,
+                                                    lib.size = lib.size,
+                                                    future.seed=TRUE)
     }
   }
 
-  if(is.null(model2fit) || 2 %in% model2fit) {
+  if(is.null(model) || 2 %in% model) {
     message('Fitting data with Negative Binomial model...')
     if(identical(covariates, character(0))) {
-      fitting[["NB"]] <-   stan_glm(f12,
-                                    family = neg_binomial_2,
-                                    data = gexpr,
-                                    offset = exposure,
-                                    cores = nCores,
-                                    seed = seed,
-                                    refresh = 0)
+      fitting[["NB"]] <-   future.apply::future_lapply(gexpr,
+                                                       FUN = model_nb,
+                                                       formula = f_nb,
+                                                       lib.size = lib.size,
+                                                       future.seed=TRUE)
     } else {
-      fitting[["NB"]] <- stan_glmer(f12,
-                                    family = neg_binomial_2,
-                                    data = gexpr,
-                                    offset = exposure,
-                                    cores = nCores,
-                                    seed = seed,
-                                    refresh = 0)
+      fitting[["NB"]] <- future.apply::future_lapply(gexpr,
+                                                     FUN = model_nb,
+                                                     formula = f_nb,
+                                                     lib.size = lib.size,
+                                                     future.seed=TRUE)
     }
   }
 
-  if(is.null(model2fit) || 3 %in% model2fit) {
-    message('Fitting data with Zero-Inflated Poisson model...')
-    myprior_3 <- get_prior(bf(f34, zi ~ 1),
-                           family = zero_inflated_poisson(),
-                           data = gexpr)
-    myprior_3_values <- eval(parse(text=gsub("student_t", "c", myprior_3$prior[1])))
-    fitting[["ZIP"]] <- brm(bf(f34, zi ~ 1),
-                            family = zero_inflated_poisson(),
-                            data = gexpr,
-                            prior = myprior_3,
-                            control = list(adapt_delta = adapt_delta),
-                            cores = nCores,
-                            seed = seed,
-                            refresh = 500)
+  if(is.null(model) || 3 %in% model) {
+    message('Fitting data with Zero Inflated Poisson model...')
+    if(identical(covariates, character(0))) {
+      fitting[["ZIP"]] <-   future.apply::future_lapply(gexpr,
+                                                       FUN = model_zip,
+                                                       formula = f_oth,
+                                                       lib.size = lib.size,
+                                                       future.seed=TRUE)
+    } else {
+      fitting[["ZIP"]] <- future.apply::future_lapply(gexpr,
+                                                     FUN = model_zip,
+                                                     formula = f_oth,
+                                                     lib.size = lib.size,
+                                                     future.seed=TRUE)
+    }
   }
 
-  if(is.null(model2fit) || 4 %in% model2fit) {
-    message('Fitting data with Zero-Inflated Negative Binomial model...')
-    myprior_4 <- get_prior(bf(f34, zi ~ 1),
-                           family = zero_inflated_negbinomial(),
-                           data = gexpr)
-    myprior_4_values <- eval(parse(text=gsub("student_t", "c", myprior_4$prior[1])))
-    fitting[["ZINB"]] <- brm(bf(f34, zi ~ 1),
-                             family = zero_inflated_negbinomial(),
-                             data = gexpr,
-                             control = list(adapt_delta = adapt_delta),
-                             prior = myprior_4,
-                             cores = nCores,
-                             seed = seed,
-                             refresh = 500)
+  if(is.null(model) || 4 %in% model) {
+    message('Fitting data with Zero Inflated Negative Binomial model...')
+    if(identical(covariates, character(0))) {
+      fitting[["ZINB"]] <-   future.apply::future_lapply(gexpr,
+                                                       FUN = model_zinb,
+                                                       formula = f_oth,
+                                                       lib.size = lib.size,
+                                                       future.seed=TRUE)
+    } else {
+      fitting[["ZINB"]] <- future.apply::future_lapply(gexpr,
+                                                     FUN = model_zinb,
+                                                     formula = f_oth,
+                                                     lib.size = lib.size,
+                                                     future.seed=TRUE)
+    }
   }
 
   return(fitting)
+
 }
 

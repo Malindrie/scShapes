@@ -12,6 +12,9 @@
 #' matrix from \code{filter_counts}.
 #' The cells of the dataframe are the covariates to be included in the GLM.
 #'
+#' @param lib.size A numeric vector that contains the total number of counts
+#' per cell from the counts matrix from \code{filter_counts}.
+#'
 #' @param formula A regression formula to fit the covariates in the ZINB GLM.
 #'
 #' @param workers Number of workers to be used in parallel computation
@@ -22,7 +25,6 @@
 #'
 #' @export
 #'
-#' @import stats
 #' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
 #' @importFrom future plan
@@ -35,7 +37,7 @@
 #' KS test,
 
 
-ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
+ks_test <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed=NULL){
 
   if(is.null(workers)) {
     workers <- min(4, parallelly::availableCores())
@@ -47,7 +49,7 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)
   if(is.null(formula)) {
-    message(sprintf("Formulating the default additive model..."))
+    message(sprintf("Formulating the additive model..."))
     formula <- 'x ~ 1 '
     if(!identical(covariates, character(0))) {
       for (covar in covariates) {
@@ -60,14 +62,11 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
   #set-up multisession
   plan(future::multisession, workers = workers)
 
-  #Calculate library size for each cell
-  lib.size <- apply(counts,2, function(x) sum(x))
-
-  #convert data ti lists
-  fu <- apply(counts, 1, function (x) cbind(x,cexpr))
+  #convert data to lists
+  gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
 
   #KS test with simulated p-values
-  KS_ZINB <- function(data, formula, cexpr, lib.size){
+  KS_ZINB <- function(data, formula, lib.size){
 
     library(pscl)
     m1 <- try(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
@@ -86,7 +85,11 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
 
     if(!(class(ccc) == "character")){
       library(VGAM)
-      pp <- try(rzinegbin(n = length(data$x), size = ccc[2,], munb = ccc[3,], pstr0 = ccc[1,]), silent = TRUE)
+      pp <- try(rzinegbin(n = length(data$x),
+                          size = ccc[2,],
+                          munb = ccc[3,],
+                          pstr0 = ccc[1,]),
+                          silent = TRUE)
     }
     else {
       pp <- "NA"
@@ -112,7 +115,11 @@ ks_test <- function(counts, cexpr, formula=NULL, workers=NULL, seed=NULL){
     return(p_value)
   }
 
-  ks.pval.unadj <- future.apply::future_lapply(fu, FUN = KS_ZINB, formula <- formula, cexpr <- cexpr, lib.size <- lib.size, future.seed=TRUE)
+  ks.pval.unadj <- future.apply::future_lapply(gexpr,
+                                               FUN = KS_ZINB,
+                                               formula <- formula,
+                                               lib.size <- lib.size,
+                                               future.seed=TRUE)
   return(ks.pval.unadj)
 
 }
