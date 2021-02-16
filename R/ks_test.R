@@ -4,7 +4,8 @@
 #' filtered sparse counts matrix from \code{filter_counts} to select genes
 #' belonging to the family of ZINB distributions
 #'
-#' @param counts A non-negative integer matrix of scRNA-seq filtered read counts.
+#' @param counts A non-negative integer matrix of scRNA-seq filtered read counts
+#' from \code{filter_counts}.
 #' The rows of the matrix are genes and columns are samples/cells.
 #'
 #' @param cexpr A dataframe that contains the covariate values.
@@ -66,6 +67,7 @@ ks_test <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed=NU
   gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
 
   #KS test with simulated p-values
+  message(sprintf("Performing the KS test..."))
   KS_ZINB <- function(data, formula, lib.size){
 
     library(pscl)

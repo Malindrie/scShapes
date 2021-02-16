@@ -35,7 +35,7 @@ using \code{future.apply}, with argument \code{multisession}.}
 \item{seed}{Seed number to be used in parallel computation
 using \code{future.apply}, with argument \code{multisession}}
 
-\item{distr}{A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)}
+\item{model}{A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)}
 }
 \value{
 A list of models fitted by 'glm'

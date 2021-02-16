@@ -22,7 +22,7 @@
 #' @param seed Seed number to be used in parallel computation
 #' using \code{future.apply}, with argument \code{multisession}
 #'
-#' @param distr A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)
+#' @param model A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)
 #'
 #' @export
 #'
@@ -47,7 +47,7 @@ fit_models <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)
   if(is.null(formula)) {
-    message(sprintf("Formulating the default additive model..."))
+    message(sprintf("Formulating the additive model..."))
     formula <- 'x ~ 1 '
     if(!identical(covariates, character(0))) {
       for (covar in covariates) {
@@ -95,7 +95,7 @@ fit_models <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed
   fitting <- list()
 
   if(is.null(model) || 1 %in% model) {
-    message('Fitting sdata with Poisson model...')
+    message('Fitting data with Poisson model...')
     if(identical(covariates, character(0))) {
       fitting[["P"]] <-   future.apply::future_lapply(gexpr,
                                                       FUN = model_poi,
