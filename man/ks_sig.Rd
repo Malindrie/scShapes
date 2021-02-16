@@ -9,11 +9,6 @@ ks_sig(ks.pval.unadj)
 \arguments{
 \item{ks.pval.unadj}{The output from \code{ks_test} which is a list
 of p-values from the KS test with gene names.}
-
-\item{cexpr}{A dataframe that contains the covariate values.
-The rows of the dataframe are the corresponding samples/cells from the counts
-matrix from \code{filter_counts}.
-The cells of the dataframe are the covariates to be included in the GLM.}
 }
 \value{
 List object containing the significant gene indices from the KS test,

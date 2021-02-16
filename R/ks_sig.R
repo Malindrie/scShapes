@@ -3,16 +3,12 @@
 #' This function is used to select genes significant from the
 #' \code{ks_test}.
 #'
-#' @param cexpr A dataframe that contains the covariate values.
-#' The rows of the dataframe are the corresponding samples/cells from the counts
-#' matrix from \code{filter_counts}.
-#' The cells of the dataframe are the covariates to be included in the GLM.
-#'
 #' @param ks.pval.unadj The output from \code{ks_test} which is a list
 #' of p-values from the KS test with gene names.
 #'
 #' @export
 #'
+#' @importFrom utils stack
 #'
 #' @return List object containing the significant gene indices from the KS test,
 #' their adjusted p-values

@@ -4,7 +4,7 @@
 \alias{model_bic}
 \title{model_bic}
 \usage{
-model_bic(fit_models)
+model_bic(fit_list)
 }
 \arguments{
 \item{fit_list}{A list of models fitted from \code{fit_models}}

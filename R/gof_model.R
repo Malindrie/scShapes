@@ -61,11 +61,11 @@ gof_model <- function(lbic, cexpr, lib.size, formula=NULL, workers=NULL, seed=NU
   plan(future::multisession, workers = workers)
 
 
-  #Pepare input data as lists to be inputed to the function
-  lbic[["P"]] <- lapply(lbic[["P"]], function (x) cbind(x,vari))
-  lbic[["NB"]] <- lapply(lbic[["NB"]], function (x) cbind(x,vari))
-  lbic[["ZIP"]] <- lapply(lbic[["ZIP"]], function (x) cbind(x,vari))
-  lbic[["ZINB"]] <- lapply(lbic[["ZINB"]], function (x) cbind(x,vari))
+  #Prepare input data as lists to be inputted to the function
+  lbic[["P"]] <- lapply(lbic[["P"]], function (x) cbind(x,cexpr))
+  lbic[["NB"]] <- lapply(lbic[["NB"]], function (x) cbind(x,cexpr))
+  lbic[["ZIP"]] <- lapply(lbic[["ZIP"]], function (x) cbind(x,cexpr))
+  lbic[["ZINB"]] <- lapply(lbic[["ZINB"]], function (x) cbind(x,cexpr))
 
 
 
