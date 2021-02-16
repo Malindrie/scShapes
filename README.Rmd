@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/Malindrie/scShapes.svg?branch=master)](https://travis-ci.com/Malindrie/scShapes)
 
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/Malindrie/scShapes?branch=master&svg=true)](https://ci.appveyor.com/project/Malindrie/scShapes)
 <!-- badges: end -->
 
 The goal of scShapes is to model and compare distribution shape profiles of scRNA-sequencing data.

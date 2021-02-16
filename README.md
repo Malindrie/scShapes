@@ -8,6 +8,8 @@
 [![Travis build
 status](https://travis-ci.com/Malindrie/scShapes.svg?branch=master)](https://travis-ci.com/Malindrie/scShapes)
 
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/Malindrie/scShapes?branch=master&svg=true)](https://ci.appveyor.com/project/Malindrie/scShapes)
 <!-- badges: end -->
 
 The goal of scShapes is to model and compare distribution shape profiles
@@ -28,6 +30,12 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(scShapes)
+#> Warning: replacing previous import 'dplyr::filter' by 'stats::filter' when
+#> loading 'scShapes'
+#> Warning: replacing previous import 'dplyr::lag' by 'stats::lag' when loading
+#> 'scShapes'
+#> Warning: replacing previous import 'stats::ks.test' by 'dgof::ks.test' when
+#> loading 'scShapes'
 ## basic example code
 ```
 
