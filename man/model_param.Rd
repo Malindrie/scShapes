@@ -14,7 +14,9 @@ model_param(fit.model, gof.res, model = NULL)
 \item{model}{A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)}
 }
 \value{
-A list of models fitted by 'glm'
+A list of model parameters estimated. Estimated model parameters include
+mean (for all 4 models), theta (over-dispersion parameter for NB & ZINB models), pi (zero-inflation parameter
+for ZIP & ZINB models).
 }
 \description{
 This function returns model parameters based on the best fit distribution

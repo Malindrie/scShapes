@@ -11,7 +11,9 @@
 #'
 #' @export
 #'
-#' @return A list of models fitted by 'glm'
+#' @return A list of model parameters estimated. Estimated model parameters include
+#' mean (for all 4 models), theta (over-dispersion parameter for NB & ZINB models), pi (zero-inflation parameter
+#' for ZIP & ZINB models).
 
 
 model_param <- function(fit.model, gof.res, model=NULL){
