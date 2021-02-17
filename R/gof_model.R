@@ -24,7 +24,7 @@
 #'
 #' @export
 #'
-#' @import stats
+#' @importFrom stats glm
 #' @importFrom MASS glm.nb
 #' @importFrom pscl zeroinfl
 #' @importFrom emdbook pchibarsq

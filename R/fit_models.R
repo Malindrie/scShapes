@@ -26,7 +26,7 @@
 #'
 #' @export
 #'
-#' @import stats
+#' @importFrom stats glm
 #' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
 #' @importFrom future.apply future_apply
