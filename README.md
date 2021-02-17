@@ -67,78 +67,59 @@ distributed through the
 
 ``` r
 library(scShapes)
+
+#Loading and preparing data for input 
 library(Seurat)
 library(SeuratData)
-#> Registered S3 method overwritten by 'cli':
-#>   method     from    
-#>   print.boxx spatstat
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
 
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-
-#> Warning in if (is.na(desc)) {: the condition has length > 1 and only the first
-#> element will be used
-#> -- Installed datasets ------------------------------------- SeuratData v0.2.1 --
-#> v ifnb 3.1.0
-#> -------------------------------------- Key -------------------------------------
-#> v Dataset loaded successfully
-#> > Dataset built with a newer version of Seurat than installed
-#> (?) Unknown version of Seurat installed
-## basic example code
+InstallData("ifnb")
+LoadData("ifnb")
+ifnb.list <- SplitObject(ifnb, split.by = "stim")
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+We first filter the genes to keep only genes expressed in at least 10%
+of cells:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+
+#First extract the RNA-seq counts from the 'RNA' assay of the seurat object
+ifnb.obj <- lapply(ifnb.list, function (x) as.matrix(x@assays$RNA@counts))
+ifnb.filtered <- lapply(ifnb.obj, function (x) filter_counts(x, perc.zero = 0.1))
+#> Removing 527 rows of genes with all zero counts
+#> Removing 778 rows of genes with all zero counts
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/master/examples>.
+In order to normalize for differences in sequencing depth, the log of
+the total UMI counts assigned per cell will be used as an offset in the
+GLM. This function is inbuilt in the algorithm; however the user is
+required to input the library sizes. We can calculate the library sizes
+for the two treatment conditions as;
 
-You can also embed plots, for example:
+``` r
+ifnb.lib.size <- lapply(ifnb.filtered, function (x) apply(x,2, function(y) sum(y)))
+```
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+The ‘meta.data’ slot of the Seurat object also contains information on
+the cell-types, which will be used as a covariate in the GLM model to
+account for known biological variation in the data.
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+``` r
+ifnb.variables <- lapply(ifnb.list, function (x) data.frame(
+                        cell.type = factor(x@meta.data$seurat_annotations),
+                        row.names = colnames(x@assays$RNA)))
+```
+
+For the purpose of this example we only run the pipeline for randomly
+selected 20 common genes under both treatment conditions ‘CTRL’ and
+‘STIM’.
+
+``` r
+
+#Randomly select 20 genes among common genes between the two treatment conditions
+comm.genes <- intersect(rownames(ifnb.filtered$CTRL), rownames(ifnb.filtered$STIM))
+comm.20.genes <- sample(comm.genes, 20, replace = FALSE)
+
+#Subset the randomly selected 20 genes
+ifnb.ctrl <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% comm.20.genes,]
+ifnb.stim <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% comm.20.genes,]
+```

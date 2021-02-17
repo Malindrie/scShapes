@@ -14,6 +14,7 @@
 #' @export
 #'
 #' @import magrittr
+#' @importFrom dplyr tally
 #'
 #' @return A list of genes chosen to be following one of the 4 distributions
 #' P, NB, ZIP, ZINB based on the least BIC value and the corresponding subset
