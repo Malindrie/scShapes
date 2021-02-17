@@ -122,4 +122,80 @@ comm.20.genes <- sample(comm.genes, 20, replace = FALSE)
 #Subset the randomly selected 20 genes
 ifnb.ctrl <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% comm.20.genes,]
 ifnb.stim <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% comm.20.genes,]
+ifnb.subset <- list(CTRL = ifnb.ctrl, STIM = ifnb.stim)
+```
+
+Perform Kolmogorov-Smirnov test to select genes belonging to the family
+of ZINB distributions.
+
+``` r
+ifnb.ctrl.KS <- ks_test(ifnb.subset$CTRL, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL)
+ifnb.stim.KS <- ks_test(ifnb.subset$STIM, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM)
+
+#Select genes significant from the KS test.
+#By default the 'ks_sig' function performs Benjamini-Hochberg correction for multiple hypothese testing
+#and selects genes significant at p-value of 0.01
+
+ifnb.ctrl.sig.KS <- ks_sig(ifnb.ctrl.KS)
+ifnb.stim.sig.KS <- ks_sig(ifnb.stim.KS)
+
+#Subset UMI counts corresponding to the genes significant from the KS test
+ifnb.sig.genes <- list(CTRL = as.data.frame(ifnb.ctrl.sig.KS$genes),
+                       STIM = as.data.frame(ifnb.stim.sig.KS$genes))
+ifnb.ctrl.KS <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% rownames(ifnb.sig.genes$CTRL),]
+  ifnb.stim.KS <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% rownames(ifnb.sig.genes$STIM),]
+```
+
+Fit the 4 distributions P,NB,ZIP,ZINB for genes that belong to the ZINB
+family of distributions by fitting GLM with log of the library sizes as
+an offset and cell types as a covariate in the GLM.
+
+``` r
+ifnb.ctrl.fit <- fit_models(counts=ifnb.ctrl.KS, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL)
+ifnb.stim.fit <- fit_models(counts=ifnb.stim.KS, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM)
+```
+
+Once the 4 distributions are fitted, we next calculate the BIC value for
+each model and select the model with the least BIC value.
+
+``` r
+ifnb.ctrl.bic.val <- model_bic(ifnb.ctrl.fit)
+ifnb.stim.bic.val <- model_bic(ifnb.stim.fit)
+
+#select model with least bic value
+ifnb.ctrl.lbic <- lbic_model(ifnb.ctrl.bic.val, ifnb.ctrl.KS)
+ifnb.stim.lbic <- lbic_model(ifnb.stim.bic.val, ifnb.stim.KS)
+```
+
+To ensure the fit of the models selected based on the least BIC value,
+additionally we perform LRT to test for model adequacy and presence of
+zero-inflation.
+
+``` r
+ifnb.ctrl.gof <- gof_model(ifnb.ctrl.lbic, ifnb.variables$CTRL, ifnb.lib.size$CTRL)
+ifnb.stim.gof <- gof_model(ifnb.stim.lbic, ifnb.variables$STIM, ifnb.lib.size$STIM)
+```
+
+Finally based on the results of the model adequacy tests, we can
+identify the distribution of best fit for each gene.
+
+``` r
+ifnb.ctrl.dist.fit <- select_model(ifnb.ctrl.gof)
+ifnb.stim.dist.fit <- select_model(ifnb.stim.gof)
+```
+
+Once the distribution of best fit is identified for genes of interest,
+it is also possible to extract parameters of interest for the models.
+
+``` r
+ifnb.ctrl.params <- model_param (ifnb.ctrl.fit, ifnb.ctrl.dist.fit, model=NULL)
+ifnb.stim.params <- model_param (ifnb.stim.fit, ifnb.stim.dist.fit, model=NULL)
+```
+
+Using above results we can now identify the differentially distributed
+genes between ‘CTRL’ and ‘STIM’.
+
+``` r
+#Subset the common genes between the two groups, that passed the KS test
+ifnb.ks.sig <- intersect(ifnb.ctrl.sig.KS, ifnb.stim.sig.KS)
 ```

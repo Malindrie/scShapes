@@ -108,7 +108,7 @@ ifnb.stim.sig.KS <- ks_sig(ifnb.stim.KS)
 ifnb.sig.genes <- list(CTRL = as.data.frame(ifnb.ctrl.sig.KS$genes),
                        STIM = as.data.frame(ifnb.stim.sig.KS$genes))
 ifnb.ctrl.KS <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% rownames(ifnb.sig.genes$CTRL),]
-ifnb.stim.KS <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% rownames(ifnb.sig.genes$STIM),]
+  ifnb.stim.KS <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% rownames(ifnb.sig.genes$STIM),]
 ```
 
 Fit the 4 distributions P,NB,ZIP,ZINB for genes that belong to the ZINB family of distributions by fitting GLM with log of the library sizes as an offset and cell types as a covariate in the GLM.
@@ -125,7 +125,6 @@ ifnb.ctrl.bic.val <- model_bic(ifnb.ctrl.fit)
 ifnb.stim.bic.val <- model_bic(ifnb.stim.fit)
 
 #select model with least bic value
-library(dplyr)
 ifnb.ctrl.lbic <- lbic_model(ifnb.ctrl.bic.val, ifnb.ctrl.KS)
 ifnb.stim.lbic <- lbic_model(ifnb.stim.bic.val, ifnb.stim.KS)
 ```
@@ -149,4 +148,11 @@ Once the distribution of best fit is identified for genes of interest, it is als
 ```{r message=FALSE, warning=FALSE}
 ifnb.ctrl.params <- model_param (ifnb.ctrl.fit, ifnb.ctrl.dist.fit, model=NULL)
 ifnb.stim.params <- model_param (ifnb.stim.fit, ifnb.stim.dist.fit, model=NULL)
+```
+
+Using above results we can now identify the differentially distributed genes between 'CTRL' and 'STIM'.
+
+```{r message=FALSE, warning=FALSE}
+#Subset the common genes between the two groups, that passed the KS test
+ifnb.ks.sig <- intersect(ifnb.ctrl.sig.KS, ifnb.stim.sig.KS)
 ```

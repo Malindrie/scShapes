@@ -14,7 +14,6 @@
 #' @export
 #'
 #' @import magrittr
-#' @importFrom dplyr tally
 #'
 #' @return A list of genes chosen to be following one of the 4 distributions
 #' P, NB, ZIP, ZINB based on the least BIC value and the corresponding subset
@@ -33,10 +32,6 @@ lbic_model <- function(bic.value, counts){
 
   #create data frame
   BIC_dataframe <- as.data.frame(BIC_colmax)
-
-  #Get the total count of genes follwoing each distribution
-  BIC_dataframe %>% group_by(BIC_colmax) %>% tally()
-
 
   #Create data frame of minimum BIC values with gene names
   BIC_genename <- as.data.frame(BIC_dataframe)
