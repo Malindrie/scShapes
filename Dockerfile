@@ -8,15 +8,19 @@ LABEL org.label-schema.license="GPLv3.0" \
       version="0.1.0"
 
 # system libraries of general use
-RUN apt-get update && apt-get install -y \
-    sudo \
-    pandoc \
-    pandoc-citeproc \
-    libcurl4-gnutls-dev \
-    libcairo2-dev \
-    libxt-dev \
-    libssl-dev \
-    libssh2-1-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      libhdf5-dev \
+      libv8-dev \
+      libssl-dev \
+      libcurl4-openssl-dev \
+      libxml2-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+
+RUN mkdir -p $HOME/.R/ \
+    && echo "CXX14FLAGS=-O3 -march=native -mtune=native -fPIC\n" >> $HOME/.R/Makevars
 
 
 # install R packages required
