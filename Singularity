@@ -1,5 +1,5 @@
 BootStrap: docker
-From: ubuntu:16.04
+From: ubuntu:latest
 
 %help
     This container runs R.
