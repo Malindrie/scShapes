@@ -36,7 +36,6 @@ From: ubuntu:16.04
     add-apt-repository -y "ppa:marutter/rrutter3.5"
     add-apt-repository -y "ppa:marutter/c2d4u3.5"
     apt-get update
-    apt-get autoremove
     apt-get -y install --no-install-recommends --allow-unauthenticated\
         r-base \
         r-base-core \
@@ -48,6 +47,7 @@ From: ubuntu:16.04
         r-cran-rcpp \
         r-cran-rcppparallel \
         r-cran-bh
+    apt-get autoremove
     apt-get clean
 
     mkdir -p $HOME/.R/
