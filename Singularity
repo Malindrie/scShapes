@@ -1,11 +1,11 @@
 BootStrap: docker
-From: ubuntu:latest
+From: ubuntu:16.04
 
 %help
     This container runs R.
 
 %labels
-    Maintainer Malindrie Dharmaratne.
+    Maintainer Kwangbom (KB) Choi, Ph.D.
 
 %apprun R
     exec R "${@}"
@@ -49,31 +49,19 @@ From: ubuntu:latest
         r-cran-bh
     apt-get clean
 
-
-  mkdir -p $HOME/.R/
+    mkdir -p $HOME/.R/
     echo "CXX14FLAGS=-O3 -march=native -mtune=native -fPIC\n" >> $HOME/.R/Makevars
 
-    Rscript -e "install.packages('Matrix')"
-    Rscript -e "install.packages('stats')"
     Rscript -e "install.packages('parallelly')"
+    Rscript -e "install.packages('pscl')"
+    Rscript -e "install.packages('emdbook')"
     Rscript -e "install.packages('future')"
     Rscript -e "install.packages('future.apply')"
     Rscript -e "install.packages('pscl')"
-    Rscript -e "install.packages('VGAM')"
     Rscript -e "install.packages('dgof')"
-    Rscript -e "install.packages('MASS')"
-    Rscript -e "install.packages('emdbook')"
-    Rscript -e "install.packages('magrittr')"
-    Rscript -e "install.packages('utils')"
-    Rscript -e "install.packages('devtools')"
     Rscript -e "devtools::install_github('Malindrie/scShapes', dep=FALSE, build_vignettes=TRUE)"
 
     rm -rf /var/lib/apt/lists/*
 
     echo "options(repos = c(CRAN = 'https://cloud.r-project.org/'), download.file.method = 'libcurl')" >> /usr/lib/R/etc/Rprofile.site
-
-
-
-
-
 
