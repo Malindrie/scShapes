@@ -35,8 +35,11 @@ From: ubuntu:16.04
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 51716619E084DAB9
     add-apt-repository -y "ppa:marutter/rrutter3.5"
     add-apt-repository -y "ppa:marutter/c2d4u3.5"
+    apt --fix-broken install
+    apt autoremove
     apt-get update
-    apt-get -y install --no-install-recommends --allow-unauthenticated --fix-broken\
+    apt-get upgrade
+    apt-get -y install --no-install-recommends --allow-unauthenticated\
         r-base \
         r-base-core \
         r-base-dev \
