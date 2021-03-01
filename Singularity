@@ -36,7 +36,12 @@ From: ubuntu:16.04
     add-apt-repository -y "ppa:marutter/rrutter3.5"
     add-apt-repository -y "ppa:marutter/c2d4u3.5"
     apt-get update
+<<<<<<< HEAD
     apt-get -y install r-base \
+=======
+    apt-get -y install --no-install-recommends --allow-unauthenticated\
+        r-base \
+>>>>>>> 03a9c20acb9c1d8fe508930ad5858790a81709f4
         r-base-core \
         r-base-dev \
         r-base-html \
