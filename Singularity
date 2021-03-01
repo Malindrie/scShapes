@@ -43,9 +43,7 @@ From: ubuntu:16.04
         r-recommended \
         r-base-html \
         r-doc-html \
-        r-cran-devtools \
-        r-cran-rcpp \
-        r-cran-rcppparallel
+        r-cran-devtools
     apt-get clean
 
     mkdir -p $HOME/.R/
