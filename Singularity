@@ -22,6 +22,9 @@ From: ubuntu:16.04
     apt-get -y install \
         wget \
         build-essential \
+        libcurl4-gnutls-dev \
+        libxml2-dev \
+        libssl-dev \
         software-properties-common \
         apt-transport-https \
         locales \
@@ -36,13 +39,14 @@ From: ubuntu:16.04
     add-apt-repository -y "ppa:marutter/rrutter3.5"
     add-apt-repository -y "ppa:marutter/c2d4u3.5"
     apt-get update
-    apt-get -u dist-upgrade
     apt-get -y install --no-install-recommends --allow-unauthenticated\
         r-base \
+        r-base-core \
         r-base-dev \
+        r-recommended \
         r-base-html \
         r-doc-html \
-        r-cran-devtools
+        r-cran-devtools \
     apt-get clean
 
     mkdir -p $HOME/.R/
