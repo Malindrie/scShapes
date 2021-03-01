@@ -45,9 +45,7 @@ From: ubuntu:16.04
         r-doc-html \
         r-cran-devtools \
         r-cran-rcpp \
-        r-cran-rcppparallel \
-        r-cran-bh
-    apt-get autoremove
+        r-cran-rcppparallel
     apt-get clean
 
     mkdir -p $HOME/.R/
