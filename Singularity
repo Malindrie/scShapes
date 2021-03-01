@@ -37,7 +37,6 @@ From: ubuntu:16.04
     add-apt-repository -y "ppa:marutter/c2d4u3.5"
     apt-get update
     apt-get -y install r-base \
-        r-base-core \
         r-base-dev \
         r-base-html \
         r-doc-html \
