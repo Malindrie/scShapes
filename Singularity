@@ -40,8 +40,7 @@ From: ubuntu:16.04
   gfortran --version
   apt-get install -y libssl-dev libxml2-dev libpcre3-dev liblzma-dev libbz2-dev libcurl4-openssl-dev
   apt-get install -y libhdf5-dev hdf5-helpers libmariadb-client-lgpl-dev
-  apt-get -y build-dep libcurl4-gnutls-dev
-  apt-get -y install libcurl4-gnutls-dev
+  apt-get -y install libcurl4-openssl-dev libssl-dev
   apt-get update
   apt-get -y install --no-install-recommends --allow-unauthenticated\
     r-base \
