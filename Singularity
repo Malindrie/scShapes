@@ -1,5 +1,6 @@
-BootStrap: docker
-From: ubuntu:16.04
+Bootstrap: docker
+From: ubuntu:18.04
+IncludeCmd: yes
 
 %help
   This container runs R.
