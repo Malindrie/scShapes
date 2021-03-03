@@ -27,8 +27,7 @@ From: ubuntu:16.04
         locales \
         libv8-dev \
         libhdf5-serial-dev
-    apt-get -y build-dep libcurl4-gnutls-dev
-    apt-get -y install libcurl4-gnutls-dev
+    apt-get -y install libcurl4-openssl-dev libssl-dev
     echo "LC_ALL=en_US.UTF-8" >> /etc/environment
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
     echo "LANG=en_US.UTF-8" > /etc/locale.conf
