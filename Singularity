@@ -5,7 +5,7 @@ From: ubuntu:16.04
   This container runs R.
 
 %labels
-  Maintainer Malindrie Dharmaratne.2021
+  Maintainer Malindrie Dharmaratne.
 
 %apprun R
   exec R "${@}"
@@ -53,6 +53,7 @@ From: ubuntu:16.04
   Rscript -e "install.packages('future.apply')"
   Rscript -e "install.packages('pscl')"
   Rscript -e "install.packages('dgof')"
+  Rscript -e "install.packages('devtools')"
   Rscript -e "devtools::install_github('Malindrie/scShapes', dep=FALSE, build_vignettes=TRUE)"
 
   rm -rf /var/lib/apt/lists/*
