@@ -26,6 +26,7 @@ From: ubuntu:16.04
         apt-transport-https \
         locales \
         libv8-dev \
+        libxml2-dev \
         libhdf5-serial-dev
     apt-get -y install libcurl4-openssl-dev libssl-dev
     echo "LC_ALL=en_US.UTF-8" >> /etc/environment
