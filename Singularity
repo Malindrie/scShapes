@@ -1,6 +1,6 @@
 Bootstrap: docker
-From: ubuntu:18.04
-IncludeCmd: yes
+From: rocker/tidyverse:3.6.1
+
 
 %help
   This container runs R.
