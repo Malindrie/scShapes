@@ -4,7 +4,7 @@
 #' the list of genes changing distribution from a unimodal to distribution to a
 #' zero-inflated distribution
 #'
-#' @param shapes_genes A dataframe of consisting of distributions followed by
+#' @param shapes_genes A dataframe consisting of distributions followed by
 #' each gene passing the KS test. Where rows are genes and each column the treatment
 #' condition.
 #'

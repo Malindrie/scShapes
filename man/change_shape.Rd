@@ -7,7 +7,7 @@
 change_shape(shapes_genes)
 }
 \arguments{
-\item{shapes_genes}{A dataframe of consisting of distributions followed by
+\item{shapes_genes}{A dataframe consisting of distributions followed by
 each gene passing the KS test. Where rows are genes and each column the treatment
 condition.}
 }
