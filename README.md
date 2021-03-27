@@ -193,9 +193,35 @@ ifnb.stim.params <- model_param (ifnb.stim.fit, ifnb.stim.dist.fit, model=NULL)
 ```
 
 Using above results we can now identify the differentially distributed
-genes between ‘CTRL’ and ‘STIM’.
+genes between ‘CTRL’ and ‘STIM’. First we need to subset genes that is
+significant in the KS test in both conditions.
 
 ``` r
-#Subset the common genes between the two groups, that passed the KS test
+#Subset the common genes between the two groups, that pass the KS test
 ifnb.ks.sig <- intersect(ifnb.ctrl.sig.KS, ifnb.stim.sig.KS)
+
+ifnb.dist.ctrl <- data.frame(gene = c(ifnb.ctrl.dist.fit$P_genes, ifnb.ctrl.dist.fit$NB_genes, ifnb.ctrl.dist.fit$ZIP_genes, ifnb.ctrl.dist.fit$ZINB_genes))
+ifnb.dist.ctrl$dist <- c(rep("Po", length(ifnb.ctrl.dist.fit$P_genes)), rep("NB", length(ifnb.ctrl.dist.fit$NB_genes)), rep("ZIP", length(ifnb.ctrl.dist.fit$ZIP_genes)), rep("ZINB", length(ifnb.ctrl.dist.fit$ZINB_genes)))
+
+ifnb.dist.stim <- data.frame(gene = c(ifnb.stim.dist.fit$P_genes, ifnb.stim.dist.fit$NB_genes, ifnb.stim.dist.fit$ZIP_genes, ifnb.stim.dist.fit$ZINB_genes))
+ifnb.dist.stim$dist <- c(rep("Po", length(ifnb.stim.dist.fit$P_genes)), rep("NB", length(ifnb.stim.dist.fit$NB_genes)), rep("ZIP", length(ifnb.stim.dist.fit$ZIP_genes)), rep("ZINB", length(ifnb.stim.dist.fit$ZINB_genes)))
+
+#Dataframe consisting of distributions followed by each gene passing the KS test
+ifnb.KS.ctrl <- ifnb.dist.ctrl[ifnb.dist.ctrl$gene %in% ifnb.ks.sig,]
+ifnb.KS.stim <- ifnb.dist.stim[ifnb.dist.stim$gene %in% ifnb.ks.sig,]
+
+ifnb.distr <- data.frame(ctrl = ifnb.KS.ctrl$dist, row.names = ifnb.KS.ctrl$gene)
+ifnb.distr$stim <- ifnb.KS.stim$dist[match(rownames(ifnb.distr), ifnb.KS.stim$gene)]
 ```
+
+Using the dataframe of genes and distribution followed under each
+condition now we can identify genes changing distribution between ‘CTRL’
+and ‘STIM’
+
+``` r
+ifnb.DD.genes <- change_shape(ifnb.distr)
+```
+
+This will give a list of two lists with genes changing distribution
+between condition and genes changing distribution from unimodal in one
+condition to zero-inflated in the other condition.

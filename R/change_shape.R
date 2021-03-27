@@ -8,6 +8,8 @@
 #' each gene passing the KS test. Where rows are genes and each column the treatment
 #' condition.
 #'
+#' @export
+#'
 #' @return A list of two lists with genes changing distribution shape between conditions.
 #' The list "All" contains all the genes changing distribution. The list "Uni2ZI" contains
 #' the genes changing distribution form a unimodal distribution in one condition to a
