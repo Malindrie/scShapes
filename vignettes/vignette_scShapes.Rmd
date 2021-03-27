@@ -16,6 +16,171 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Pulling and running singularity container
+
+```
+$ singularity pull --name scShapes.sif shub://Malindrie/scShapes
+$ singularity shell scShapes.sif
+Singularity scShapes.sif:~ > 
+```
+## Pulling and running docker container
+
+```
+$ docker pull maldharm/scshapes
+$ docker run -it maldharm/scshapes
+root@516e456b0762:/#
+```
+
+To use containerized `scShapes` package, need to launch `R` or execute an R script through `Rscript`.
+
+## Install `scShapes` from `install_github`
+
+```r
+devtools::install_github('Malindrie/scShapes')
+```
+
 ```{r setup}
 library(scShapes)
+version()
 ```
+
+## Example
+
+This is a basic example which shows how you can use scShapes for identifying differential distributions in single-cell RNA-seq data. For this example data we use the human immune cells (PBMC) dataset distributed through the [SeuratData](https://github.com/satijalab/seurat-data) package. 
+
+```{r example, results='hide', message=FALSE, warning=FALSE}
+library(scShapes)
+
+#Loading and preparing data for input 
+library(Seurat)
+library(SeuratData)
+
+InstallData("ifnb")
+LoadData("ifnb")
+ifnb.list <- SplitObject(ifnb, split.by = "stim")
+```
+
+We first filter the genes to keep only genes expressed in at least 10% of cells:
+
+```{r ifnb.filtered}
+
+#First extract the RNA-seq counts from the 'RNA' assay of the seurat object
+ifnb.obj <- lapply(ifnb.list, function (x) as.matrix(x@assays$RNA@counts))
+ifnb.filtered <- lapply(ifnb.obj, function (x) filter_counts(x, perc.zero = 0.1))
+```
+
+In order to normalize for differences in sequencing depth, the log of the total UMI counts assigned per cell will be used as an offset in the GLM. This function is inbuilt in the algorithm; however the user is required to input the library sizes. We can calculate the library sizes for the two treatment conditions as;   
+
+```{r ifnb.lib.size}
+ifnb.lib.size <- lapply(ifnb.filtered, function (x) apply(x,2, function(y) sum(y)))
+```
+
+The 'meta.data' slot of the Seurat object also contains information on the cell-types, which will be used as a covariate in the GLM model to account for known biological variation in the data.
+
+```{r ifnb.variables}
+ifnb.variables <- lapply(ifnb.list, function (x) data.frame(
+                        cell.type = factor(x@meta.data$seurat_annotations),
+                        row.names = colnames(x@assays$RNA)))
+```
+
+For the purpose of this example we only run the pipeline for randomly selected 20 common genes under both treatment conditions 'CTRL' and 'STIM'.
+
+```{r ifnb.subset}
+
+#Randomly select 20 genes among common genes between the two treatment conditions
+comm.genes <- intersect(rownames(ifnb.filtered$CTRL), rownames(ifnb.filtered$STIM))
+comm.20.genes <- sample(comm.genes, 20, replace = FALSE)
+
+#Subset the randomly selected 20 genes
+ifnb.ctrl <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% comm.20.genes,]
+ifnb.stim <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% comm.20.genes,]
+ifnb.subset <- list(CTRL = ifnb.ctrl, STIM = ifnb.stim)
+
+```
+
+Perform Kolmogorov-Smirnov test to select genes belonging to the family of ZINB distributions.
+
+```{r message=FALSE, warning=FALSE}
+ifnb.ctrl.KS <- ks_test(ifnb.subset$CTRL, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL)
+ifnb.stim.KS <- ks_test(ifnb.subset$STIM, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM)
+
+#Select genes significant from the KS test.
+#By default the 'ks_sig' function performs Benjamini-Hochberg correction for multiple hypothese testing
+#and selects genes significant at p-value of 0.01
+
+ifnb.ctrl.sig.KS <- ks_sig(ifnb.ctrl.KS)
+ifnb.stim.sig.KS <- ks_sig(ifnb.stim.KS)
+
+#Subset UMI counts corresponding to the genes significant from the KS test
+ifnb.sig.genes <- list(CTRL = as.data.frame(ifnb.ctrl.sig.KS$genes),
+                       STIM = as.data.frame(ifnb.stim.sig.KS$genes))
+ifnb.ctrl.KS <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% rownames(ifnb.sig.genes$CTRL),]
+  ifnb.stim.KS <- ifnb.filtered$STIM[rownames(ifnb.filtered$STIM) %in% rownames(ifnb.sig.genes$STIM),]
+```
+
+Fit the 4 distributions P,NB,ZIP,ZINB for genes that belong to the ZINB family of distributions by fitting GLM with log of the library sizes as an offset and cell types as a covariate in the GLM.
+
+```{r message=FALSE, warning=FALSE}
+ifnb.ctrl.fit <- fit_models(counts=ifnb.ctrl.KS, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL)
+ifnb.stim.fit <- fit_models(counts=ifnb.stim.KS, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM)
+```
+
+Once the 4 distributions are fitted, we next calculate the BIC value for each model and select the model with the least BIC value.
+
+```{r message=FALSE, warning=FALSE}
+ifnb.ctrl.bic.val <- model_bic(ifnb.ctrl.fit)
+ifnb.stim.bic.val <- model_bic(ifnb.stim.fit)
+
+#select model with least bic value
+ifnb.ctrl.lbic <- lbic_model(ifnb.ctrl.bic.val, ifnb.ctrl.KS)
+ifnb.stim.lbic <- lbic_model(ifnb.stim.bic.val, ifnb.stim.KS)
+```
+
+To ensure the fit of the models selected based on the least BIC value, additionally we perform LRT to test for model adequacy and presence of zero-inflation.
+
+```{r message=FALSE, warning=FALSE}
+ifnb.ctrl.gof <- gof_model(ifnb.ctrl.lbic, ifnb.variables$CTRL, ifnb.lib.size$CTRL)
+ifnb.stim.gof <- gof_model(ifnb.stim.lbic, ifnb.variables$STIM, ifnb.lib.size$STIM)
+```
+
+Finally based on the results of the model adequacy tests, we can identify the distribution of best fit for each gene. 
+
+```{r message=FALSE, warning=FALSE}
+ifnb.ctrl.dist.fit <- select_model(ifnb.ctrl.gof)
+ifnb.stim.dist.fit <- select_model(ifnb.stim.gof)
+```
+
+Once the distribution of best fit is identified for genes of interest, it is also possible to extract parameters of interest for the models.
+
+```{r message=FALSE, warning=FALSE}
+ifnb.ctrl.params <- model_param (ifnb.ctrl.fit, ifnb.ctrl.dist.fit, model=NULL)
+ifnb.stim.params <- model_param (ifnb.stim.fit, ifnb.stim.dist.fit, model=NULL)
+```
+
+Using above results we can now identify the differentially distributed genes between 'CTRL' and 'STIM'. First we need to subset genes that is significant in the KS test in both conditions.  
+
+```{r message=FALSE, warning=FALSE}
+#Subset the common genes between the two groups, that pass the KS test
+ifnb.ks.sig <- intersect(ifnb.ctrl.sig.KS, ifnb.stim.sig.KS)
+
+ifnb.dist.ctrl <- data.frame(gene = c(ifnb.ctrl.dist.fit$P_genes, ifnb.ctrl.dist.fit$NB_genes, ifnb.ctrl.dist.fit$ZIP_genes, ifnb.ctrl.dist.fit$ZINB_genes))
+ifnb.dist.ctrl$dist <- c(rep("Po", length(ifnb.ctrl.dist.fit$P_genes)), rep("NB", length(ifnb.ctrl.dist.fit$NB_genes)), rep("ZIP", length(ifnb.ctrl.dist.fit$ZIP_genes)), rep("ZINB", length(ifnb.ctrl.dist.fit$ZINB_genes)))
+
+ifnb.dist.stim <- data.frame(gene = c(ifnb.stim.dist.fit$P_genes, ifnb.stim.dist.fit$NB_genes, ifnb.stim.dist.fit$ZIP_genes, ifnb.stim.dist.fit$ZINB_genes))
+ifnb.dist.stim$dist <- c(rep("Po", length(ifnb.stim.dist.fit$P_genes)), rep("NB", length(ifnb.stim.dist.fit$NB_genes)), rep("ZIP", length(ifnb.stim.dist.fit$ZIP_genes)), rep("ZINB", length(ifnb.stim.dist.fit$ZINB_genes)))
+
+#Dataframe consisting of distributions followed by each gene passing the KS test
+ifnb.KS.ctrl <- ifnb.dist.ctrl[ifnb.dist.ctrl$gene %in% ifnb.ks.sig,]
+ifnb.KS.stim <- ifnb.dist.stim[ifnb.dist.stim$gene %in% ifnb.ks.sig,]
+
+ifnb.distr <- data.frame(ctrl = ifnb.KS.ctrl$dist, row.names = ifnb.KS.ctrl$gene)
+ifnb.distr$stim <- ifnb.KS.stim$dist[match(rownames(ifnb.distr), ifnb.KS.stim$gene)]
+```
+
+Using the dataframe of genes and distribution followed under each condition now we can identify genes changing distribution between 'CTRL' and 'STIM'
+
+```{r message=FALSE, warning=FALSE}
+ifnb.DD.genes <- change_shape(ifnb.distr)
+```
+This will give a list of two lists with genes changing distribution between condition and genes changing distribution from unimodal in one condition to zero-inflated in the other condition.  
+
