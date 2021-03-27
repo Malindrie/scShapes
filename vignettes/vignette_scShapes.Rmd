@@ -48,6 +48,7 @@ version()
 
 This is a basic example which shows how you can use scShapes for identifying differential distributions in single-cell RNA-seq data. For this example data we use the human immune cells (PBMC) dataset distributed through the [SeuratData](https://github.com/satijalab/seurat-data) package. 
 
+
 ```{r example, results='hide', message=FALSE, warning=FALSE}
 
 #Loading and preparing data for input 
