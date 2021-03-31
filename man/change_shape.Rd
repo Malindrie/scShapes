@@ -8,17 +8,18 @@ change_shape(shapes_genes)
 }
 \arguments{
 \item{shapes_genes}{A dataframe consisting of distributions followed by
-each gene passing the KS test. Where rows are genes and each column the treatment
-condition.}
+each gene passing the KS test. Where rows are genes and each column the
+treatment condition.}
 }
 \value{
-A list of two lists with genes changing distribution shape between conditions.
-The list "All" contains all the genes changing distribution. The list "Uni2ZI" contains
-the genes changing distribution form a unimodal distribution in one condition to a
-zero-inflated distribution in another condition.
+A list of two lists with genes changing distribution shape between
+conditions. The list "All" contains all the genes changing distribution.
+The list "Uni2ZI" contains the genes changing distribution form a unimodal
+distribution in one condition to a zero-inflated distribution in another
+condition.
 }
 \description{
 This function returns a list of genes changing shape between conditions and
-the list of genes changing distribution from a unimodal to distribution to a
-zero-inflated distribution
+the list of genes changing distribution from a unimodal to distribution to
+a zero-inflated distribution
 }
