@@ -18,6 +18,12 @@
 #' # apply the select_model function to the best fit model from the results of
 #' # the gof_model function
 #'
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
+#'                             lib.size=scData$lib.size)
+#' scData_bicvals <- model_bic(scData_models)
+#' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
+#' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib.size)
+#'
 #' scData_fit <- select_model(scData_gof)
 
 

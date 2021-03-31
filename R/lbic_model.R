@@ -27,6 +27,11 @@
 #' # BIC value on the matrix of BIC values obtained after running
 #' # model_bic function.
 #'
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
+#'                             lib.size=scData$lib.size)
+#'
+#' scData_bicvals <- model_bic(scData_models)
+#'
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 
 

@@ -36,6 +36,7 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+SystemRequirements: Package vignettes based on R Markdown v2 or reStructuredText require Pandoc (http://pandoc.org).
 biocViews: RNASeq, SingleCell, MultipleComparison,
     GeneExpression
 Depends: 
