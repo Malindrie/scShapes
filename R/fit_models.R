@@ -48,7 +48,7 @@
 #'
 #' \dontshow{
 #' #R CMD check: make sure any open connections are closed afterward
-#' if (!inherits(future::plan(), "sequential")) future::plan(sequential)
+#' if (!inherits(future::plan(), "multisession")) future::plan(multisession)
 #' }
 
 

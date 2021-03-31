@@ -54,6 +54,6 @@ scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.s
 
 \dontshow{
 #R CMD check: make sure any open connections are closed afterward
-if (!inherits(future::plan(), "sequential")) future::plan(sequential)
+if (!inherits(future::plan(), "multisession")) future::plan(multisession)
 }
 }
