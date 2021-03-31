@@ -44,7 +44,11 @@
 #' # apply the fit_models function to subset genes belonging to the
 #' # family of ZINB distributions, selceted from ks_test function.
 #'
-#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
+#' lib.size=scData$lib_size)
+#'
+#' ## Shut down parallel workers
+#' future::plan("sequential")
 
 
 fit_models <- function(counts, cexpr, lib.size,
