@@ -45,11 +45,6 @@
 #' # family of ZINB distributions, selceted from ks_test function.
 #'
 #' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
-#'
-#' \dontshow{
-#' #R CMD check: make sure any open connections are closed afterward
-#' if (!inherits(future::plan(), "multisession")) future::plan(multisession)
-#' }
 
 
 fit_models <- function(counts, cexpr, lib.size,
@@ -182,6 +177,9 @@ fit_models <- function(counts, cexpr, lib.size,
   }
 
   return(fitting)
+
+
+  future:::ClusterRegistry("stop")
 
 }
 
