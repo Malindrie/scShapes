@@ -32,6 +32,10 @@
 #' scData_bicvals <- model_bic(scData_models)
 #'
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
+#'
+#' \dontshow{
+#' ## Shut down parallel workers
+#' future::plan("sequential")}
 
 
 lbic_model <- function(bic.value, counts){

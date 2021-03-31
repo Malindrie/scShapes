@@ -53,6 +53,7 @@ data(scData)
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
 lib.size=scData$lib_size)
 
+\dontshow{
 ## Shut down parallel workers
-future::plan("sequential")
+future::plan("sequential")}
 }

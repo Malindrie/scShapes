@@ -46,4 +46,8 @@ data(scData)
 # family of ZINB distributions.
 
 scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+
+\dontshow{
+## Shut down parallel workers
+future::plan("sequential")}
 }

@@ -27,6 +27,10 @@
 #' # the Kolmogorov Smirnov test.
 #'
 #' scData_KS_sig <- ks_sig(scData_KS)
+#'
+#' \dontshow{
+#' ## Shut down parallel workers
+#' future::plan("sequential")}
 
 
 ks_sig <- function(ks.pval.unadj){

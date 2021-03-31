@@ -36,4 +36,8 @@ scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scDa
 scData_fit <- select_model(scData_gof)
 
 scData_params <- model_param(scData_models, scData_fit, model=NULL)
+
+\dontshow{
+## Shut down parallel workers
+future::plan("sequential")}
 }

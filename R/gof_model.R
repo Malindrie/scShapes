@@ -46,7 +46,10 @@
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 #'
 #' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size)
-
+#'
+#' \dontshow{
+#' ## Shut down parallel workers
+#' future::plan("sequential")}
 
 
 gof_model <- function(lbic, cexpr, lib.size,

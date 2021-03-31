@@ -31,6 +31,10 @@
 #' scData_fit <- select_model(scData_gof)
 #'
 #' scData_params <- model_param(scData_models, scData_fit, model=NULL)
+#'
+#' \dontshow{
+#' ## Shut down parallel workers
+#' future::plan("sequential")}
 
 model_param <- function(fit.model, gof.res,
                         model=NULL){

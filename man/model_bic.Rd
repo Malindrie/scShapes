@@ -26,4 +26,8 @@ data(scData)
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
 
 scData_bicvals <- model_bic(scData_models)
+
+\dontshow{
+## Shut down parallel workers
+future::plan("sequential")}
 }
