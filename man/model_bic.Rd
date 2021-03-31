@@ -23,7 +23,7 @@ data(scData)
 # apply the model_bic function to calculate the BIC values on the models
 # obtained after running fit_models function.
 
-scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
+scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
 
 scData_bicvals <- model_bic(scData_models)
 }

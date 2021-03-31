@@ -32,7 +32,7 @@ data(scData)
 # BIC value on the matrix of BIC values obtained after running
 # model_bic function.
 
-scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
+scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
 
 scData_bicvals <- model_bic(scData_models)
 

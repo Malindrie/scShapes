@@ -45,5 +45,5 @@ data(scData)
 # apply the ks_test function to subset genes belonging to the
 # family of ZINB distributions.
 
-scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
+scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
 }
