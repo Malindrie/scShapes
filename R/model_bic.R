@@ -28,19 +28,15 @@
 model_bic <- function(fit_list){
 
   model_BIC <- function(z){
-    if(!(class(z)=="try-error")){
-      stats::BIC(z)
-    }
-    else{
-      "NA"
-    }
+    ifelse((!(class(z)=="try-error")),
+           stats::BIC(z), "NA")
   }
 
 
-  bic_p <- t(as.data.frame(lapply(fit_list$P, model_BIC)))
-  bic_nb <- t(as.data.frame(lapply(fit_list$NB, model_BIC)))
-  bic_zip <- t(as.data.frame(lapply(fit_list$ZIP, model_BIC)))
-  bic_zinb <- t(as.data.frame(lapply(fit_list$ZINB, model_BIC)))
+  bic_p <- t(as.data.frame(lapply(fit_list$P, model_BIC)))[,1]
+  bic_nb <- t(as.data.frame(lapply(fit_list$NB, model_BIC)))[,1]
+  bic_zip <- t(as.data.frame(lapply(fit_list$ZIP, model_BIC)))[,1]
+  bic_zinb <- t(as.data.frame(lapply(fit_list$ZINB, model_BIC)))[,1]
 
   bic <- cbind(bic_p, bic_nb, bic_zip, bic_zinb)
   colnames(bic) <- c("P_bic", "NB_bic", "ZIP_bic", "ZINB_bic")
