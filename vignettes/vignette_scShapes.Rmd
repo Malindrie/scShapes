@@ -4,7 +4,7 @@ author: "Malindrie Dharmaratne"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{rmarkdown::render}
   %\VignetteIndexEntry{The vignette for running  scShapes}
   %\VignetteEncoding{UTF-8}
 ---
