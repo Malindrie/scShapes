@@ -24,8 +24,7 @@
 #' # apply the model_param function to extract the parameters of the best fit
 #' # model obtained by running the select_model function
 #'
-#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
-#'                             lib.size=scData$lib.size)
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
 #' scData_bicvals <- model_bic(scData_models)
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 #' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib.size)
