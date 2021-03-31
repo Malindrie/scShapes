@@ -33,6 +33,7 @@
 #' @importFrom future.apply future_apply
 #' @importFrom pscl zeroinfl
 #' @importFrom MASS glm.nb
+#' @importFrom future plan
 #'
 #' @return A list of models fitted by 'glm'
 #'
