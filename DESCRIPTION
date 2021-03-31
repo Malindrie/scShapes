@@ -32,9 +32,10 @@ URL: https://github.com/Malindrie/scShapes
 BugReports: https://github.com/Malindrie/scShapes/issues
 Suggests: 
     knitr,
+    BiocStyle,
     rmarkdown,
     testthat (>= 3.0.0)
-VignetteBuilder: knitr
+VignetteBuilder: rmarkdown
 Config/testthat/edition: 3
 SystemRequirements: Package vignettes based on R Markdown v2 or reStructuredText require Pandoc (http://pandoc.org).
     The function rst2pdf() require rst2pdf (https://github.com/rst2pdf/rst2pdf).
