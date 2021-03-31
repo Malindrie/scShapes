@@ -8,6 +8,15 @@
 #' @export
 #'
 #' @return A dataframe containing the BIC values for each distribution type (P, NB, ZIP, ZINB).
+#'
+#' @examples
+#'
+#' data(scData)
+#'
+#' # apply the model_bic function to calculate the BIC values on the models
+#' # obtained after running fit_models function.
+#'
+#' scData_bicvals <- model_bic(scData_models)
 
 
 model_bic <- function(fit_list){

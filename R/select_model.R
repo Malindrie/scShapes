@@ -7,7 +7,19 @@
 #'
 #' @export
 #'
+#' @importFrom stats p.adjust
+#'
 #' @return A list of selected model distributions for genes scShapes selects.
+#'
+#' @examples
+#'
+#' data(scData)
+#'
+#' # apply the select_model function to the best fit model from the results of
+#' # the gof_model function
+#'
+#' scData_fit <- select_model(scData_gof)
+
 
 select_model <- function(lrt.value){
 

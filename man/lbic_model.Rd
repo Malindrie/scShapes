@@ -24,3 +24,13 @@ of counts from \code{filter_counts}
 This function is used to select the best fit model for each gene based on the
 least BIC value
 }
+\examples{
+
+data(scData)
+
+# apply the lbic_model function to select the model with the least
+# BIC value on the matrix of BIC values obtained after running
+# model_bic function.
+
+scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
+}

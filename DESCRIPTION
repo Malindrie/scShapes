@@ -1,13 +1,29 @@
 Package: scShapes
 Type: Package
-Title: A Statistical Framework for Modeling and Identifying Differential Distributions in Single-cell RNA-sequencing Data
+Title: A Statistical Framework for Modeling and Identifying Differential 
+        Distributions in Single-cell RNA-sequencing Data
 Version: 0.1.0
-Author: Malindrie Dharmaratne <malindrie@gmail.com>
-Maintainer: Malindrie Dharmaratne <malindrie@gmail.com>
-Description: We present a novel statistical method for modelling and 
-              comparing distribution shape profiles of scRNA-sequencing data.
+Authors@R: person("Malindrie", "Dharmaratne", role = c("cre", "aut"), 
+                  email = "malindrie@gmail.com", 
+                  comment = c(ORCID = "0000-0002-1694-6496"))
+Description: We present a novel statistical framework for identifying 
+        differential distributions in single-cell RNA-sequencing 
+        (scRNA-seq) data between treatment conditions by modeling gene 
+        expression read counts using generalized linear models (GLMs). 
+        We model each gene independently under each treatment condition 
+        using the error distributions Poisson (P), Negative Binomial (NB), 
+        Zero-inflated Poisson (ZIP) and Zero-inflated Negative Binomial (ZINB) 
+        with log link function and model based normalization for differences 
+        in sequencing depth. Since all four distributions considered in 
+        our framework belong to the same family of distributions, 
+        we first perform a Kolmogorov-Smirnov (KS) test to select genes 
+        belonging to the family of ZINB distributions. Genes passing the 
+        KS test will be then modeled using GLMs.  Model selection is done 
+        by calculating the Bayesian Information Criterion and likelihood 
+        ratio test statistic. 
 NeedsCompilation: yes
-Imports: Matrix, stats, parallelly, future, future.apply, pscl, VGAM, dgof, MASS, emdbook, magrittr, utils
+Imports: Matrix, stats, parallelly, future, future.apply, pscl, VGAM, dgof, 
+        MASS, emdbook, magrittr, utils
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -20,3 +36,7 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+biocViews: RNASeq, SingleCell, MultipleComparison,
+    GeneExpression
+Depends: 
+    R (>= 4.0)

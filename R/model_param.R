@@ -11,12 +11,23 @@
 #'
 #' @export
 #'
+#' @importFrom VGAM predict
+#'
 #' @return A list of model parameters estimated. Estimated model parameters include
 #' mean (for all 4 models), theta (over-dispersion parameter for NB & ZINB models), pi (zero-inflation parameter
 #' for ZIP & ZINB models).
+#'
+#' @examples
+#'
+#' data(scData)
+#'
+#' # apply the model_param function to extract the parameters of the best fit
+#' # model obtained by running the select_model function
+#'
+#' scData_params <- model_param(scData_models, scData_fit, model=NULL)
 
-
-model_param <- function(fit.model, gof.res, model=NULL){
+model_param <- function(fit.model, gof.res,
+                        model=NULL){
 
   param_poi <- function(m1){
 
@@ -55,7 +66,7 @@ model_param <- function(fit.model, gof.res, model=NULL){
     mean_ML = predict(m1, type = "count")
 
     pi_theta_mean <- c(pi_ML, theta_ML, mean_ML)
-    names(pi_theta_mean)[1:2] <- c("pi", "theta")
+    names(pi_theta_mean)[seq_along(1:2)] <- c("pi", "theta")
     return(pi_theta_mean)
   }
 

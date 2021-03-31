@@ -27,6 +27,7 @@
 #' @export
 #'
 #' @importFrom stats glm
+#' @importFrom stats as.formula
 #' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
 #' @importFrom future.apply future_apply
@@ -34,8 +35,21 @@
 #' @importFrom MASS glm.nb
 #'
 #' @return A list of models fitted by 'glm'
+#'
+#' @examples
+#'
+#' data(scData)
+#'
+#' # apply the fit_models function to subset genes belonging to the
+#' # family of ZINB distributions, selceted from ks_test function.
+#'
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
+#'                             lib.size=scData$lib.size)
 
-fit_models <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed=NULL, model=NULL){
+
+fit_models <- function(counts, cexpr, lib.size,
+                       formula=NULL, workers=NULL,
+                       seed=NULL, model=NULL){
 
   if(is.null(workers)) {
     workers <- min(4, parallelly::availableCores())

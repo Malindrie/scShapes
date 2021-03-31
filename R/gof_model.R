@@ -25,14 +25,29 @@
 #' @export
 #'
 #' @importFrom stats glm
+#' @importFrom stats as.formula
+#' @importFrom stats pchisq
 #' @importFrom MASS glm.nb
+#' @importFrom VGAM logLik
 #' @importFrom pscl zeroinfl
 #' @importFrom emdbook pchibarsq
 #'
 #' @return A list of genes with the p-values from performing the GOF tests.
+#'
+#' @examples
+#'
+#' data(scData)
+#'
+#' # apply the gof_model function to perform the likelihood ratio
+#' # test on the models selected by using the lbic_model function
+#'
+#' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib.size)
 
 
-gof_model <- function(lbic, cexpr, lib.size, formula=NULL, workers=NULL, seed=NULL){
+
+gof_model <- function(lbic, cexpr, lib.size,
+                      formula=NULL, workers=NULL,
+                      seed=NULL){
 
 
   if(is.null(workers)) {

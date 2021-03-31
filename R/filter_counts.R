@@ -15,6 +15,17 @@
 #'
 #' @return An object of class \code{\link{Matrix}} with genes removed if
 #' they have more than \code{perc.zero} zeros.
+#'
+#' @examples
+#'
+#' # load toy  example data
+#'
+#' data(scData)
+#'
+#' # apply the filter_counts function to filter out genes if they have
+#' # more than 10% zero
+#'
+#' scData_filt <- filter_counts(scData$counts, perc.zero = 0.1)
 
 
 filter_counts <- function(counts, perc.zero = 0.1){

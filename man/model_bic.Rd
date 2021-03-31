@@ -16,3 +16,12 @@ A dataframe containing the BIC values for each distribution type (P, NB, ZIP, ZI
 This function is used to calculate the Bayesian information criterion of the models fitted in
 \code{fit_models}.
 }
+\examples{
+
+data(scData)
+
+# apply the model_bic function to calculate the BIC values on the models
+# obtained after running fit_models function.
+
+scData_bicvals <- model_bic(scData_models)
+}

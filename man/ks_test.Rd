@@ -29,10 +29,21 @@ using \code{future.apply}, with argument \code{multisession}}
 }
 \value{
 List object containing the p-values from the
-KS test,
+KS test.
 }
 \description{
 This function is used to perform Kolmogorv-Smirnov test on the
 filtered sparse counts matrix from \code{filter_counts} to select genes
 belonging to the family of ZINB distributions
+}
+\examples{
+
+#' # load toy  example data
+
+data(scData)
+
+# apply the ks_test function to subset genes belonging to the
+# family of ZINB distributions.
+
+scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
 }

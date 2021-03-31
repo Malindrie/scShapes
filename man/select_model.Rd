@@ -16,3 +16,12 @@ A list of selected model distributions for genes scShapes selects.
 \description{
 This function is used to select the distribution of best fit for scRNA-seq count data
 }
+\examples{
+
+data(scData)
+
+# apply the select_model function to the best fit model from the results of
+# the gof_model function
+
+scData_fit <- select_model(scData_gof)
+}

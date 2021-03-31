@@ -33,3 +33,12 @@ A list of genes with the p-values from performing the GOF tests.
 This function is used to perform the likelihood ratio test on the models chosen
 based on the BIC values from \code{best_model} to check for model adequacy.
 }
+\examples{
+
+data(scData)
+
+# apply the gof_model function to perform the likelihood ratio
+# test on the models selected by using the lbic_model function
+
+scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib.size)
+}

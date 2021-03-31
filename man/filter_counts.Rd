@@ -21,3 +21,14 @@ they have more than \code{perc.zero} zeros.
 This function is used to preprocess matrix of read counts to
 only keep genes with a certain number of nonzero entries.
 }
+\examples{
+
+# load toy  example data
+
+data(scData)
+
+# apply the filter_counts function to filter out genes if they have
+# more than 10\% zero
+
+scData_filt <- filter_counts(scData$counts, perc.zero = 0.1)
+}

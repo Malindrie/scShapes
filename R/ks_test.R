@@ -26,19 +26,35 @@
 #'
 #' @export
 #'
+#' @importFrom stats as.formula
+#' @importFrom stats ecdf
 #' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
 #' @importFrom future plan
 #' @importFrom future.apply future_lapply
 #' @importFrom pscl zeroinfl
+#' @importFrom VGAM predict
 #' @importFrom VGAM rzinegbin
 #' @importFrom dgof ks.test
 #'
 #' @return List object containing the p-values from the
-#' KS test,
+#' KS test.
+#'
+#' @examples
+#'
+#' #' # load toy  example data
+#'
+#' data(scData)
+#'
+#' # apply the ks_test function to subset genes belonging to the
+#' # family of ZINB distributions.
+#'
+#' scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib.size)
 
 
-ks_test <- function(counts, cexpr, lib.size, formula=NULL, workers=NULL, seed=NULL){
+ks_test <- function(counts, cexpr, lib.size,
+                    formula=NULL, workers=NULL,
+                    seed=NULL){
 
   if(is.null(workers)) {
     workers <- min(4, parallelly::availableCores())

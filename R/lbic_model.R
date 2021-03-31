@@ -18,13 +18,23 @@
 #' @return A list of genes chosen to be following one of the 4 distributions
 #' P, NB, ZIP, ZINB based on the least BIC value and the corresponding subset
 #' of counts from \code{filter_counts}
+#'
+#' @examples
+#'
+#' data(scData)
+#'
+#' # apply the lbic_model function to select the model with the least
+#' # BIC value on the matrix of BIC values obtained after running
+#' # model_bic function.
+#'
+#' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 
 
 lbic_model <- function(bic.value, counts){
 
   #subset counts that passed the KS test and was passed on to calculate the BIC
   counts_bic <- counts[rownames(counts) %in% rownames(bic.value),]
-  counts_list <- lapply(as.list(1:dim(counts_bic)[1]), function(x) counts_bic[x[1],])
+  counts_list <- lapply(as.list(seq_len(1):dim(counts_bic)[1]), function(x) counts_bic[x[1],])
   names(counts_list) <- rownames(counts_bic)
 
   #return column name of min value for each row

@@ -22,3 +22,12 @@ for ZIP & ZINB models).
 This function returns model parameters based on the best fit distribution
 as selected by \code{distr_fit} and models fitted by \code{fit_models}
 }
+\examples{
+
+data(scData)
+
+# apply the model_param function to extract the parameters of the best fit
+# model obtained by running the select_model function
+
+scData_params <- model_param(scData_models, scData_fit, model=NULL)
+}
