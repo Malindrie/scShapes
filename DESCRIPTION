@@ -18,7 +18,7 @@ Description: We present a novel statistical framework for identifying
         our framework belong to the same family of distributions, 
         we first perform a Kolmogorov-Smirnov (KS) test to select genes 
         belonging to the family of ZINB distributions. Genes passing the 
-        KS test will be then modeled using GLMs.  Model selection is done 
+        KS test will be then modeled using GLMs. Model selection is done 
         by calculating the Bayesian Information Criterion and likelihood 
         ratio test statistic. 
 NeedsCompilation: yes
