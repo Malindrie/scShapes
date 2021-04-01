@@ -24,7 +24,7 @@ per cell from the counts matrix from \code{filter_counts}.}
 using \code{future.apply}, with argument \code{multisession}.}
 
 \item{seed}{Seed number to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}}
+using \code{future.apply}, with argument \code{multisession}.}
 }
 \value{
 A list of genes with the p-values from performing the GOF tests.

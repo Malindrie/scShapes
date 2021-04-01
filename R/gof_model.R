@@ -20,7 +20,7 @@
 #' using \code{future.apply}, with argument \code{multisession}.
 #'
 #' @param seed Seed number to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}
+#' using \code{future.apply}, with argument \code{multisession}.
 #'
 #' @export
 #'
