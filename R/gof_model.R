@@ -31,6 +31,9 @@
 #' @importFrom VGAM logLik
 #' @importFrom pscl zeroinfl
 #' @importFrom emdbook pchibarsq
+#' @importFrom future plan
+#' @importFrom future multisession
+#' @importFrom future.apply future_lapply
 #'
 #' @return A list of genes with the p-values from performing the GOF tests.
 #'
@@ -79,9 +82,6 @@ gof_model <- function(lbic, cexpr, lib.size,
   f_oth <- as.formula(formula)
   f_nb <- as.formula(paste(formula, ' + offset(log(lib.size))'))
 
-  #set-up multisession
-  plan(future::multisession, workers = workers)
-
 
   #Prepare input data as lists to be inputted to the function
   lbic[["P"]] <- lapply(lbic[["P"]], function (x) cbind(x,cexpr))
@@ -89,7 +89,9 @@ gof_model <- function(lbic, cexpr, lib.size,
   lbic[["ZIP"]] <- lapply(lbic[["ZIP"]], function (x) cbind(x,cexpr))
   lbic[["ZINB"]] <- lapply(lbic[["ZINB"]], function (x) cbind(x,cexpr))
 
-
+  #set-up multisession
+  oplan <- future::plan(future::multisession, workers = workers)
+  on.exit(plan(oplan))
 
   #Fit the four distributions
   #Poisson distribution

@@ -34,6 +34,7 @@
 #' @importFrom pscl zeroinfl
 #' @importFrom MASS glm.nb
 #' @importFrom future plan
+#' @importFrom future multisession
 #'
 #' @return A list of models fitted by 'glm'
 #'
@@ -78,13 +79,12 @@ fit_models <- function(counts, cexpr, lib.size,
   f_oth <- as.formula(formula)
   f_nb <- as.formula(paste(formula, ' + offset(log(lib.size))'))
 
-  #set-up multisession
-  plan(future::multisession, workers = workers)
-
-
   #convert data to lists
   gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
 
+  #set-up multisession
+  oplan <- future::plan(future::multisession, workers = workers)
+  on.exit(plan(oplan))
 
   #Fit the four distributions
   model_poi <- function(data, formula, lib.size){
@@ -182,9 +182,6 @@ fit_models <- function(counts, cexpr, lib.size,
   }
 
   return(fitting)
-
-
-  future:::ClusterRegistry("stop")
 
 }
 

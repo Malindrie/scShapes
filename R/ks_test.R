@@ -31,6 +31,7 @@
 #' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
 #' @importFrom future plan
+#' @importFrom future multisession
 #' @importFrom future.apply future_lapply
 #' @importFrom pscl zeroinfl
 #' @importFrom VGAM predict
@@ -80,11 +81,12 @@ ks_test <- function(counts, cexpr, lib.size,
   }
   formula <- as.formula(formula)
 
-  #set-up multisession
-  plan(future::multisession, workers = workers)
-
   #convert data to lists
   gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
+
+  #set-up multisession
+  oplan <- future::plan(future::multisession, workers = workers)
+  on.exit(plan(oplan))
 
   #KS test with simulated p-values
   message(sprintf("Performing the KS test..."))
