@@ -40,4 +40,4 @@ Config/testthat/edition: 3
 biocViews: RNASeq, SingleCell, MultipleComparison,
     GeneExpression
 Depends: 
-    R (>= 3.4)
+    R (>= 4.0)
