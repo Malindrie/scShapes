@@ -60,6 +60,7 @@ From: ubuntu:16.04
   Rscript -e "install.packages('magrittr')"
   Rscript -e "install.packages('utils')"
   Rscript -e "install.packages('dgof')"
+  Rscript -e "install.packages('rmarkdown')"
   Rscript -e "install.packages('devtools')"
   Rscript -e "devtools::install_github('Malindrie/scShapes', dep=FALSE, build_vignettes=TRUE)"
 

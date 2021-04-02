@@ -36,6 +36,7 @@ RUN R --slave -e 'install.packages("MASS")'
 RUN R --slave -e 'install.packages("emdbook")'
 RUN R --slave -e 'install.packages("magrittr")'
 RUN R --slave -e 'install.packages("utils")'
+RUN R --slave -e 'install.packages("rmarkdown")'
 RUN R --slave -e 'install.packages("devtools")'
 RUN R --slave -e 'devtools::install_github("Malindrie/scShapes", dep = FALSE, build_vignettes = TRUE)'
 

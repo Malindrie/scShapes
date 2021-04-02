@@ -36,7 +36,6 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: rmarkdown
-SystemRequirements: Package vignettes based on R Markdown v2 or reStructuredText require Pandoc (http://pandoc.org).
 Config/testthat/edition: 3
 biocViews: RNASeq, SingleCell, MultipleComparison,
     GeneExpression
