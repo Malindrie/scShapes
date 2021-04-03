@@ -177,7 +177,7 @@ ifnb.distr <- data.frame(ctrl = ifnb.KS.ctrl$dist, row.names = ifnb.KS.ctrl$gene
 ifnb.distr$stim <- ifnb.KS.stim$dist[match(rownames(ifnb.distr), ifnb.KS.stim$gene)]
 ```
 
-Using the dataframe of genes and distribution followed under each condition now we can identify genes changing distribution between 'CTRL' and 'STIM'
+Using the dataframe of genes and distribution followed under each condition, now we can identify genes changing distribution between 'CTRL' and 'STIM'
 
 ```{r message=FALSE, warning=FALSE}
 ifnb.DD.genes <- change_shape(ifnb.distr)
