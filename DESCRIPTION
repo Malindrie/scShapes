@@ -23,7 +23,7 @@ Description: We present a novel statistical framework for identifying
         ratio test statistic. 
 NeedsCompilation: yes
 Imports: Matrix, stats, parallelly, future, future.apply, pscl, VGAM, dgof, 
-        MASS, emdbook, magrittr, utils
+        MASS, emdbook, magrittr, utils, SeuratData
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -33,7 +33,6 @@ BugReports: https://github.com/Malindrie/scShapes/issues
 Suggests: 
     knitr,
     Seurat,
-    SeuratData,
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
