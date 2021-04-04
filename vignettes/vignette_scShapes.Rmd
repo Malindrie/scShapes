@@ -53,6 +53,8 @@ This is a basic example which shows how you can use scShapes for identifying dif
 
 #Loading and preparing data for input 
 library(Seurat)
+
+devtools::install_github('satijalab/seurat-data')
 library(SeuratData)
 
 InstallData("ifnb")

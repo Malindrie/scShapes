@@ -63,7 +63,7 @@ From: ubuntu:16.04
   Rscript -e "install.packages('rmarkdown')"
   Rscript -e "install.packages('devtools')"
   Rscript -e "install.packages('Seurat')"
-  Rscript -e "install.packages('SeuratData')"
+  Rscript -e "devtools::install_github('satijalab/seurat-data')"
   Rscript -e "devtools::install_github('Malindrie/scShapes', dep=FALSE, build_vignettes=TRUE)"
 
   rm -rf /var/lib/apt/lists/*
