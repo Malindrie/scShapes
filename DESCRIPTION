@@ -37,7 +37,6 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-biocViews: RNASeq, SingleCell, MultipleComparison,
-    GeneExpression
+biocViews: RNASeq, SingleCell, MultipleComparison, GeneExpression
 Depends: 
     R (>= 4.0)
