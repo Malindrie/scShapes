@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: ubuntu:16.04
+From: ubuntu:18.04
 
 %help
   This container runs R.
@@ -34,9 +34,8 @@ From: ubuntu:16.04
     echo "LANG=en_US.UTF-8" > /etc/locale.conf
     locale-gen en_US.UTF-8
     echo 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/' >> /etc/apt/sources.list
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 51716619E084DAB9
-    add-apt-repository -y "ppa:marutter/rrutter3.5"
-    add-apt-repository -y "ppa:marutter/c2d4u3.5"
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys        E298A3A825C0D65DFD57CBB651716619E084DAB9
+    add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/'
     apt-get update
     apt-get -y install --no-install-recommends --allow-unauthenticated\
         r-base \

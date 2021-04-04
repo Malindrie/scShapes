@@ -11,6 +11,6 @@ version <- function() {
   cat("___] |___ ____| |   ||___| |___||___  ___]\n")
   cat("                           |\n")
   cat("                           |\n")
-  cat("                            Ver:0.1.0\n")
+  cat("                            Ver:0.99.0\n")
   cat("\n")
 }
