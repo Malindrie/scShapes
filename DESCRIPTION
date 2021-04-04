@@ -33,6 +33,7 @@ BugReports: https://github.com/Malindrie/scShapes/issues
 Suggests: 
     knitr,
     Seurat,
+    SeuratData,
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr

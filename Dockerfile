@@ -39,6 +39,7 @@ RUN R --slave -e 'install.packages("utils")'
 RUN R --slave -e 'install.packages("rmarkdown")'
 RUN R --slave -e 'install.packages("devtools")'
 RUN R --slave -e 'install.packages("Seurat")'
+RUN R --slave -e 'install.packages("SeuratData")'
 RUN R --slave -e 'devtools::install_github("Malindrie/scShapes", dep = FALSE, build_vignettes = TRUE)'
 
 
