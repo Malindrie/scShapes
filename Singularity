@@ -36,6 +36,8 @@ From: ubuntu:18.04
     echo 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/' >> /etc/apt/sources.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
     add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/'
+    add-apt-repository -y "ppa:marutter/rrutter3.5"
+    add-apt-repository -y "ppa:marutter/c2d4u3.5"
     apt-get update
     apt-get -y install --no-install-recommends --allow-unauthenticated\
         r-base \
@@ -61,8 +63,6 @@ From: ubuntu:18.04
   Rscript -e "install.packages('dgof')"
   Rscript -e "install.packages('rmarkdown')"
   Rscript -e "install.packages('devtools')"
-  Rscript -e "install.packages('Seurat')"
-  Rscript -e "devtools::install_github('satijalab/seurat-data')"
   Rscript -e "devtools::install_github('Malindrie/scShapes', dep=FALSE, build_vignettes=TRUE)"
 
   rm -rf /var/lib/apt/lists/*

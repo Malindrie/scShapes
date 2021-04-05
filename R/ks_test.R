@@ -95,7 +95,7 @@ ks_test <- function(counts, cexpr, lib.size,
     library(pscl)
     m1 <- try(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
 
-    if(!(class(m1) == "try-error")[1]){
+    if(!is(m1, "try-error")){
       pi_ML = predict(m1, type = "zero")
       theta_ML = m1$theta
       mean_ML = predict(m1, type = "count")
@@ -107,7 +107,7 @@ ks_test <- function(counts, cexpr, lib.size,
     }
 
 
-    if(!(class(ccc) == "character")[1]){
+    if(!is(ccc, "character")){
       library(VGAM)
       pp <- try(rzinegbin(n = length(data$x),
                           size = ccc[2,],
@@ -119,7 +119,7 @@ ks_test <- function(counts, cexpr, lib.size,
       pp <- "NA"
     }
 
-    if(!(class(pp) == "character")[1]){
+    if(!is(pp, "character")){
 
       library(dgof)
       D <- try(ks.test(data$x, ecdf(pp), simulate.p.value = TRUE)$p.value, silent = TRUE)
@@ -128,7 +128,7 @@ ks_test <- function(counts, cexpr, lib.size,
       D <- "NA"
     }
 
-    if(!(class(D) == "character")[1]){
+    if(!is(D, "character")){
 
       p_value <- D
     }

@@ -28,7 +28,7 @@
 model_bic <- function(fit_list){
 
   model_BIC <- function(z){
-    ifelse((!(class(z)=="try-error")[1]),
+    ifelse((!is(z, "try-error")),
            stats::BIC(z), "NA")
   }
 

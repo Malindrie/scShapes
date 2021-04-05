@@ -38,9 +38,7 @@ RUN R --slave -e 'install.packages("magrittr")'
 RUN R --slave -e 'install.packages("utils")'
 RUN R --slave -e 'install.packages("rmarkdown")'
 RUN R --slave -e 'install.packages("devtools")'
-RUN R --slave -e 'install.packages("Seurat")'
-RUN R --slave -e 'devtools::install_github("satijalab/seurat-data")'
-RUN R --slave -e 'devtools::install_github("Malindrie/scShapes", dep = FALSE, build_vignettes = TRUE)'
+RUN R --slave -e 'devtools::install_github("Malindrie/scShapes", build_vignettes = TRUE)'
 
 
 CMD ["/bin/bash"]
