@@ -2,8 +2,8 @@
 #'
 #' @description Toy example data list of scRNA-seq counts,
 #' information on covariates, and library sizes for randomly
-#' generated 20 genes to illustrate how to use the function
-#' functions of the package \code{scShapes}
+#' generated 20 genes to illustrate how to use the functions
+#' of the package \code{scShapes}
 #'
 #' @name scData
 #'

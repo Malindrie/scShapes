@@ -32,8 +32,6 @@ URL: https://github.com/Malindrie/scShapes
 BugReports: https://github.com/Malindrie/scShapes/issues
 Suggests: 
     knitr,
-    Seurat,
-    devtools,
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
