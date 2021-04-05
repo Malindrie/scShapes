@@ -33,11 +33,10 @@ From: ubuntu:18.04
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
     echo "LANG=en_US.UTF-8" > /etc/locale.conf
     locale-gen en_US.UTF-8
-    echo 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/' >> /etc/apt/sources.list
+    echo 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/' >> /etc/apt/sources.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
-    add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/'
-    add-apt-repository -y "ppa:marutter/rrutter3.5"
-    add-apt-repository -y "ppa:marutter/c2d4u3.5"
+    add-apt-repository -y "ppa:marutter/rrutter4.0"
+    add-apt-repository -y "ppa:c2d4u.team/c2d4u4.0+"
     apt-get update
     apt-get -y install --no-install-recommends --allow-unauthenticated\
         r-base \
