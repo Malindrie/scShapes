@@ -88,26 +88,22 @@ fit_models <- function(counts, cexpr, lib.size,
 
   #Fit the four distributions
   model_poi <- function(data, formula, lib.size){
-    library(stats)
-    try(glm(formula, data, offset=log(lib.size), family = "poisson"), silent = TRUE)
+    try(stats::glm(formula, data, offset=log(lib.size), family = "poisson"), silent = TRUE)
   }
 
 
   model_nb <- function(data, formula, lib.size){
-    library(MASS)
-    try(glm.nb(formula, data), silent = TRUE)
+    try(MASS::glm.nb(formula, data), silent = TRUE)
   }
 
 
   model_zip <- function(data, formula, lib.size){
-    library(pscl)
-    try(zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"), silent = TRUE)
+    try(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"), silent = TRUE)
   }
 
 
   model_zinb <- function(data, formula, lib.size){
-    library(pscl)
-    try(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
+    try(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
   }
 
 

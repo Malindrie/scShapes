@@ -92,8 +92,7 @@ ks_test <- function(counts, cexpr, lib.size,
   message(sprintf("Performing the KS test..."))
   KS_ZINB <- function(data, formula, lib.size){
 
-    library(pscl)
-    m1 <- try(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
+    m1 <- try(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
 
     if(!is(m1, "try-error")){
       pi_ML = predict(m1, type = "zero")
@@ -108,8 +107,8 @@ ks_test <- function(counts, cexpr, lib.size,
 
 
     if(!is(ccc, "character")){
-      library(VGAM)
-      pp <- try(rzinegbin(n = length(data$x),
+
+      pp <- try(VGAM::rzinegbin(n = length(data$x),
                           size = ccc[2,],
                           munb = ccc[3,],
                           pstr0 = ccc[1,]),
@@ -121,8 +120,7 @@ ks_test <- function(counts, cexpr, lib.size,
 
     if(!is(pp, "character")){
 
-      library(dgof)
-      D <- try(ks.test(data$x, ecdf(pp), simulate.p.value = TRUE)$p.value, silent = TRUE)
+      D <- try(dgof::ks.test(data$x, ecdf(pp), simulate.p.value = TRUE)$p.value, silent = TRUE)
     }
     else {
       D <- "NA"

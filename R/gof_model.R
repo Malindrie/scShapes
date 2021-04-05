@@ -97,39 +97,31 @@ gof_model <- function(lbic, cexpr, lib.size,
   #Poisson distribution
   model_Chipoi <- function(data, formula, lib.size){
 
-    library(stats)
-
-    1-pchisq(summary(glm(formula, data, offset=log(lib.size), family = "poisson"))$deviance,
-             df= summary(glm(formula, data, offset=log(lib.size), family = "poisson"))$df.residual)
+    1-pchisq(summary(stats::glm(formula, data, offset=log(lib.size), family = "poisson"))$deviance,
+             df= summary(stats::glm(formula, data, offset=log(lib.size), family = "poisson"))$df.residual)
   }
 
 
   #NB distribution
   model_Chinb <- function(data, formula, lib.size){
 
-    library(MASS)
-
-    1-pchisq(summary(glm.nb(formula, data))$deviance,
-             df= summary(glm.nb(formula, data))$df.residual)
+    1-pchisq(summary(MASS::glm.nb(formula, data))$deviance,
+             df= summary(MASS::glm.nb(formula, data))$df.residual)
   }
 
 
   #ZIP distribution
   model_Chizip <- function(data, formula, lib.size){
-    library(pscl)
-    library(emdbook)
 
-    1-pchibarsq(2*(logLik(zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"))-logLik(glm(formula, data, offset=log(lib.size), family = "poisson"))),df=1,mix=0.5,lower.tail=TRUE, log.p = FALSE)
+    1-emdbook::pchibarsq(2*(logLik(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"))-logLik(stats::glm(formula, data, offset=log(lib.size), family = "poisson"))),df=1,mix=0.5,lower.tail=TRUE, log.p = FALSE)
 
   }
 
 
   #ZINB distribution
   model_Chizinb <- function(data, formula, lib.size){
-    library(pscl)
-    library(emdbook)
 
-    1-pchibarsq(2*(logLik(zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"))-logLik(glm.nb(formula, data))),df=1,mix=0.5,lower.tail=TRUE, log.p = FALSE)
+    1-emdbook::pchibarsq(2*(logLik(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"))-logLik(MASS::glm.nb(formula, data))),df=1,mix=0.5,lower.tail=TRUE, log.p = FALSE)
   }
 
 

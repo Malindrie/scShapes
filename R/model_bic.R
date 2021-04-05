@@ -7,6 +7,8 @@
 #'
 #' @export
 #'
+#' @importFrom stats BIC
+#'
 #' @return A dataframe containing the BIC values for each distribution type (P, NB, ZIP, ZINB).
 #'
 #' @examples
