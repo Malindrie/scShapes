@@ -54,7 +54,7 @@ version()
 #> ___] |___ ____| |   ||___| |___||___  ___]
 #>                            |
 #>                            |
-#>                             Ver:0.1.0
+#>                             Ver:0.99.0
 ```
 
 ## Example
@@ -81,7 +81,6 @@ We first filter the genes to keep only genes expressed in at least 10%
 of cells:
 
 ``` r
-
 #First extract the RNA-seq counts from the 'RNA' assay of the seurat object
 ifnb.obj <- lapply(ifnb.list, function (x) as.matrix(x@assays$RNA@counts))
 ifnb.filtered <- lapply(ifnb.obj, function (x) filter_counts(x, perc.zero = 0.1))
@@ -114,7 +113,6 @@ selected 20 common genes under both treatment conditions ‘CTRL’ and
 ‘STIM’.
 
 ``` r
-
 #Randomly select 20 genes among common genes between the two treatment conditions
 comm.genes <- intersect(rownames(ifnb.filtered$CTRL), rownames(ifnb.filtered$STIM))
 comm.20.genes <- sample(comm.genes, 20, replace = FALSE)
