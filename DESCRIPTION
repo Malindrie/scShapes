@@ -20,7 +20,7 @@ Description: We present a novel statistical framework for identifying
         belonging to the family of ZINB distributions. Genes passing the 
         KS test will be then modeled using GLMs. Model selection is done 
         by calculating the Bayesian Information Criterion (BIC) and likelihood 
-        ratio test statistic. 
+        ratio test statistic (LRT). 
 NeedsCompilation: yes
 Imports: Matrix, stats, parallelly, future, future.apply, pscl, VGAM, dgof, 
         MASS, emdbook, magrittr, utils 
