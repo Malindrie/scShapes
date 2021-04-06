@@ -19,7 +19,7 @@ Description: We present a novel statistical framework for identifying
         we first perform a Kolmogorov-Smirnov (KS) test to select genes 
         belonging to the family of ZINB distributions. Genes passing the 
         KS test will be then modeled using GLMs. Model selection is done 
-        by calculating the Bayesian Information Criterion and likelihood 
+        by calculating the Bayesian Information Criterion (BIC) and likelihood 
         ratio test statistic. 
 NeedsCompilation: yes
 Imports: Matrix, stats, parallelly, future, future.apply, pscl, VGAM, dgof, 
