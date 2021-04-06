@@ -10,7 +10,6 @@ os:
   - osx
 
 r:
-  - 3.5
   - release
   - devel
 
