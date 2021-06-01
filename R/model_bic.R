@@ -8,6 +8,8 @@
 #' @export
 #'
 #' @importFrom stats BIC
+#' @importFrom methods is
+#' @import pscl
 #'
 #' @return A dataframe containing the BIC values for each distribution type (P, NB, ZIP, ZINB).
 #'
@@ -18,22 +20,13 @@
 #' # apply the model_bic function to calculate the BIC values on the models
 #' # obtained after running fit_models function.
 #'
-#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
+#' BPPARAM=bpparam())
 #'
 #' scData_bicvals <- model_bic(scData_models)
-#'
-#' \dontshow{
-#' ## Shut down parallel workers
-#' future::plan("sequential")}
 
 
 model_bic <- function(fit_list){
-
-  model_BIC <- function(z){
-    ifelse((!is(z, "try-error")),
-           stats::BIC(z), "NA")
-  }
-
 
   bic_p <- t(as.data.frame(lapply(fit_list$P, model_BIC)))
   bic_nb <- t(as.data.frame(lapply(fit_list$NB, model_BIC)))
@@ -47,3 +40,9 @@ model_bic <- function(fit_list){
 
 }
 
+
+model_BIC <- function(z){
+  library(pscl)
+  ifelse((!is(z, "character")),
+         stats::BIC(z), "NA")
+}

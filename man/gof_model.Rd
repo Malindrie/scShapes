@@ -4,7 +4,7 @@
 \alias{gof_model}
 \title{gof_model}
 \usage{
-gof_model(lbic, cexpr, lib.size, formula = NULL, workers = NULL, seed = NULL)
+gof_model(lbic, cexpr, lib.size, formula = NULL, BPPARAM)
 }
 \arguments{
 \item{lbic}{A list of genes together with filtered read counts based on the selected
@@ -20,11 +20,9 @@ per cell from the counts matrix from \code{filter_counts}.}
 
 \item{formula}{A regression formula to fit the covariates in the ZINB GLM.}
 
-\item{workers}{Number of workers to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}.}
-
-\item{seed}{Seed number to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}.}
+\item{BPPARAM}{configuration parameter related to the method of parallel execution.
+For further information on how to set-up parallel execution refer to
+\code{BiocParallel} vignette.}
 }
 \value{
 A list of genes with the p-values from performing the GOF tests.
@@ -40,13 +38,11 @@ data(scData)
 # apply the gof_model function to perform the likelihood ratio
 # test on the models selected by using the lbic_model function
 
-scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
+BPPARAM=bpparam())
 scData_bicvals <- model_bic(scData_models)
 scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 
-scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size)
-
-\dontshow{
-## Shut down parallel workers
-future::plan("sequential")}
+scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size,
+BPPARAM=bpparam())
 }

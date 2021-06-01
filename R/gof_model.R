@@ -16,11 +16,9 @@
 #'
 #' @param formula A regression formula to fit the covariates in the ZINB GLM.
 #'
-#' @param workers Number of workers to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}.
-#'
-#' @param seed Seed number to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}.
+#' @param BPPARAM configuration parameter related to the method of parallel execution.
+#' For further information on how to set-up parallel execution refer to
+#' \code{BiocParallel} vignette.
 #'
 #' @export
 #'
@@ -31,9 +29,8 @@
 #' @importFrom VGAM logLik
 #' @importFrom pscl zeroinfl
 #' @importFrom emdbook pchibarsq
-#' @importFrom future plan
-#' @importFrom future multisession
-#' @importFrom future.apply future_lapply
+#' @importFrom BiocParallel bplapply
+#' @importFrom BiocParallel bpparam
 #'
 #' @return A list of genes with the p-values from performing the GOF tests.
 #'
@@ -44,35 +41,27 @@
 #' # apply the gof_model function to perform the likelihood ratio
 #' # test on the models selected by using the lbic_model function
 #'
-#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
+#' BPPARAM=bpparam())
 #' scData_bicvals <- model_bic(scData_models)
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 #'
-#' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size)
-#'
-#' \dontshow{
-#' ## Shut down parallel workers
-#' future::plan("sequential")}
+#' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size,
+#' BPPARAM=bpparam())
 
 
 gof_model <- function(lbic, cexpr, lib.size,
-                      formula=NULL, workers=NULL,
-                      seed=NULL){
+                      formula=NULL, BPPARAM){
 
 
-  if(is.null(workers)) {
-    workers <- min(4, parallelly::availableCores())
-  }
-  if(is.null(seed)) {
-    seed <- 0xBEEF
-  }
+  set.seed(0xBEEF)
 
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)
   if(is.null(formula)) {
     message(sprintf("Formulating the additive model..."))
     formula <- 'x ~ 1 '
-    if(!identical(covariates, character(0))) {
+    if(!identical(covariates, NULL)) {
       for (covar in covariates) {
         formula <- paste(formula, sprintf(' + %s', covar))
       }
@@ -84,14 +73,30 @@ gof_model <- function(lbic, cexpr, lib.size,
 
 
   #Prepare input data as lists to be inputted to the function
-  lbic[["P"]] <- lapply(lbic[["P"]], function (x) cbind(x,cexpr))
-  lbic[["NB"]] <- lapply(lbic[["NB"]], function (x) cbind(x,cexpr))
-  lbic[["ZIP"]] <- lapply(lbic[["ZIP"]], function (x) cbind(x,cexpr))
-  lbic[["ZINB"]] <- lapply(lbic[["ZINB"]], function (x) cbind(x,cexpr))
+  if(identical(covariates, NULL)) {
+    lbic[["P"]] <- lapply(lbic[["P"]], function (x) as.list(as.data.frame(x)))
+  } else {
+    lbic[["P"]] <- lapply(lbic[["P"]], function (x) cbind(x,cexpr))
+  }
 
-  #set-up multisession
-  oplan <- future::plan(future::multisession, workers = workers)
-  on.exit(plan(oplan))
+  if(identical(covariates, NULL)) {
+    lbic[["NB"]] <- lapply(lbic[["NB"]], function (x) as.list(as.data.frame(x)))
+  } else {
+    lbic[["NB"]] <- lapply(lbic[["NB"]], function (x) cbind(x,cexpr))
+  }
+
+  if(identical(covariates, NULL)) {
+    lbic[["ZIP"]] <- lapply(lbic[["ZIP"]], function (x) as.list(as.data.frame(x)))
+  } else {
+    lbic[["ZIP"]] <- lapply(lbic[["ZIP"]], function (x) cbind(x,cexpr))
+  }
+
+  if(identical(covariates, NULL)) {
+    lbic[["ZINB"]] <- lapply(lbic[["ZINB"]], function (x) as.list(as.data.frame(x)))
+  } else {
+    lbic[["ZINB"]] <- lapply(lbic[["ZINB"]], function (x) cbind(x,cexpr))
+  }
+
 
   #Fit the four distributions
   #Poisson distribution
@@ -128,32 +133,62 @@ gof_model <- function(lbic, cexpr, lib.size,
   fitting_lrt <- list()
 
   message('Performing LRT for Poisson model...')
-  fitting_lrt[["P_lrt"]] <- future.apply::future_lapply(lbic[["P"]],
-                                                  FUN = model_Chipoi,
-                                                  formula = f_oth,
-                                                  lib.size = lib.size,
-                                                  future.seed=TRUE)
+  if(identical(covariates, NULL)) {
+    fitting_lrt[["P_lrt"]] <- lapply(lbic[["P"]],
+                                     FUN = model_Chipoi,
+                                     formula = f_oth,
+                                     lib.size = lib.size)
+  } else {
+    fitting_lrt[["P_lrt"]] <- lapply(lbic[["P"]],
+                                     FUN = model_Chipoi,
+                                     formula = f_oth,
+                                     lib.size = lib.size)
+  }
 
   message('Performing LRT for Negative Binomial model...')
-  fitting_lrt[["NB_lrt"]] <- future.apply::future_lapply(lbic[["NB"]],
+  if(identical(covariates, NULL)) {
+    fitting_lrt[["NB_lrt"]] <- BiocParallel::bplapply(lbic[["NB"]],
                                                       FUN = model_Chinb,
+                                                      BPPARAM = BPPARAM,
                                                       formula = f_oth,
-                                                      lib.size = lib.size,
-                                                      future.seed=TRUE)
+                                                      lib.size = lib.size)
+  } else {
+    fitting_lrt[["NB_lrt"]] <- BiocParallel::bplapply(lbic[["NB"]],
+                                                      FUN = model_Chinb,
+                                                      BPPARAM = BPPARAM,
+                                                      formula = f_oth,
+                                                      lib.size = lib.size)
+  }
 
   message('Performing LRT for Zero Inflated Poisson model...')
-  fitting_lrt[["ZIP_lrt"]] <- future.apply::future_lapply(lbic[["ZIP"]],
+  if(identical(covariates, NULL)) {
+    fitting_lrt[["ZIP_lrt"]] <- BiocParallel::bplapply(lbic[["ZIP"]],
                                                       FUN = model_Chizip,
+                                                      BPPARAM = BPPARAM,
                                                       formula = f_oth,
-                                                      lib.size = lib.size,
-                                                      future.seed=TRUE)
+                                                      lib.size = lib.size)
+  } else {
+    fitting_lrt[["ZIP_lrt"]] <- BiocParallel::bplapply(lbic[["ZIP"]],
+                                                       FUN = model_Chizip,
+                                                       BPPARAM = BPPARAM,
+                                                       formula = f_oth,
+                                                       lib.size = lib.size)
+  }
 
   message('Performing LRT for Zero Inflated Negtaive Binomial model...')
-  fitting_lrt[["ZINB_lrt"]] <- future.apply::future_lapply(lbic[["ZINB"]],
+  if(identical(covariates, NULL)) {
+    fitting_lrt[["ZINB_lrt"]] <- BiocParallel::bplapply(lbic[["ZINB"]],
                                                       FUN = model_Chizinb,
+                                                      BPPARAM = BPPARAM,
                                                       formula = f_oth,
-                                                      lib.size = lib.size,
-                                                      future.seed=TRUE)
+                                                      lib.size = lib.size)
+  } else {
+    fitting_lrt[["ZINB_lrt"]] <- BiocParallel::bplapply(lbic[["ZINB"]],
+                                                        FUN = model_Chizinb,
+                                                        BPPARAM = BPPARAM,
+                                                        formula = f_oth,
+                                                        lib.size = lib.size)
+  }
 
   return(fitting_lrt)
 

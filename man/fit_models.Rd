@@ -4,15 +4,7 @@
 \alias{fit_models}
 \title{fit_models}
 \usage{
-fit_models(
-  counts,
-  cexpr,
-  lib.size,
-  formula = NULL,
-  workers = NULL,
-  seed = NULL,
-  model = NULL
-)
+fit_models(counts, cexpr, lib.size, formula = NULL, model = NULL, BPPARAM)
 }
 \arguments{
 \item{counts}{A non-negative integer matrix of scRNA-seq filtered read counts
@@ -29,13 +21,11 @@ per cell from the counts matrix from \code{filter_counts}.}
 
 \item{formula}{A regression formula to fit the covariates in the ZINB GLM.}
 
-\item{workers}{Number of workers to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}.}
-
-\item{seed}{Seed number to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}}
-
 \item{model}{A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)}
+
+\item{BPPARAM}{configuration parameter related to the method of parallel execution.
+For further information on how to set-up parallel execution refer to
+\code{BiocParallel} vignette.}
 }
 \value{
 A list of models fitted by 'glm'
@@ -51,9 +41,5 @@ data(scData)
 # family of ZINB distributions, selceted from ks_test function.
 
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
-lib.size=scData$lib_size)
-
-\dontshow{
-## Shut down parallel workers
-future::plan("sequential")}
+lib.size=scData$lib_size, BPPARAM=bpparam())
 }

@@ -34,7 +34,6 @@ devtools::install_github('Malindrie/scShapes')
 ```
 ```{r}
 library(scShapes)
-version()
 ```
 
 ## Example
@@ -47,6 +46,8 @@ library(scShapes)
 #Loading and preparing data for input 
 library(Seurat)
 library(SeuratData)
+library(dplyr)
+library(BiocParallel)
 
 InstallData("ifnb")
 LoadData("ifnb")
@@ -94,8 +95,8 @@ ifnb.subset <- list(CTRL = ifnb.ctrl, STIM = ifnb.stim)
 Perform Kolmogorov-Smirnov test to select genes belonging to the family of ZINB distributions.
 
 ```{r message=FALSE, warning=FALSE}
-ifnb.ctrl.KS <- ks_test(ifnb.subset$CTRL, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL)
-ifnb.stim.KS <- ks_test(ifnb.subset$STIM, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM)
+ifnb.ctrl.KS <- ks_test(ifnb.subset$CTRL, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL, BPPARAM=SnowParam(workers=4,type="SOCK"))
+ifnb.stim.KS <- ks_test(ifnb.subset$STIM, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM, BPPARAM=SnowParam(workers=4,type="SOCK"))
 
 #Select genes significant from the KS test.
 #By default the 'ks_sig' function performs Benjamini-Hochberg correction for multiple hypothese testing
@@ -114,8 +115,8 @@ ifnb.ctrl.KS <- ifnb.filtered$CTRL[rownames(ifnb.filtered$CTRL) %in% rownames(if
 Fit the 4 distributions P,NB,ZIP,ZINB for genes that belong to the ZINB family of distributions by fitting GLM with log of the library sizes as an offset and cell types as a covariate in the GLM.
 
 ```{r message=FALSE, warning=FALSE}
-ifnb.ctrl.fit <- fit_models(counts=ifnb.ctrl.KS, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL)
-ifnb.stim.fit <- fit_models(counts=ifnb.stim.KS, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM)
+ifnb.ctrl.fit <- fit_models(counts=ifnb.ctrl.KS, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL, BPPARAM=SnowParam(workers=4,type="SOCK"))
+ifnb.stim.fit <- fit_models(counts=ifnb.stim.KS, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM, BPPARAM=SnowParam(workers=4,type="SOCK"))
 ```
 
 Once the 4 distributions are fitted, we next calculate the BIC value for each model and select the model with the least BIC value.
@@ -132,8 +133,8 @@ ifnb.stim.lbic <- lbic_model(ifnb.stim.bic.val, ifnb.stim.KS)
 To ensure the fit of the models selected based on the least BIC value, additionally we perform LRT to test for model adequacy and presence of zero-inflation.
 
 ```{r message=FALSE, warning=FALSE}
-ifnb.ctrl.gof <- gof_model(ifnb.ctrl.lbic, ifnb.variables$CTRL, ifnb.lib.size$CTRL)
-ifnb.stim.gof <- gof_model(ifnb.stim.lbic, ifnb.variables$STIM, ifnb.lib.size$STIM)
+ifnb.ctrl.gof <- gof_model(ifnb.ctrl.lbic, ifnb.variables$CTRL, ifnb.lib.size$CTRL, BPPARAM=SerialParam())
+ifnb.stim.gof <- gof_model(ifnb.stim.lbic, ifnb.variables$STIM, ifnb.lib.size$STIM, BPPARAM=SerialParam())
 ```
 
 Finally based on the results of the model adequacy tests, we can identify the distribution of best fit for each gene. 
@@ -153,8 +154,10 @@ ifnb.stim.params <- model_param (ifnb.stim.fit, ifnb.stim.dist.fit, model=NULL)
 Using above results we can now identify the differentially distributed genes between 'CTRL' and 'STIM'. First we need to subset genes that is significant in the KS test in both conditions.  
 
 ```{r message=FALSE, warning=FALSE}
-#Subset the common genes between the two groups, that pass the KS test
-ifnb.ks.sig <- intersect(ifnb.ctrl.sig.KS, ifnb.stim.sig.KS)
+#Subset the common genes between the two groups, that pass the GOF test
+ifnb.ctrl.fit <- unlist(ifnb.ctrl.dist.fit)
+ifnb.stim.fit <- unlist(ifnb.stim.dist.fit)
+ifnb.gof.sig <- intersect(ifnb.ctrl.fit, ifnb.stim.fit)
 
 ifnb.dist.ctrl <- data.frame(gene = c(ifnb.ctrl.dist.fit$P_genes, ifnb.ctrl.dist.fit$NB_genes, ifnb.ctrl.dist.fit$ZIP_genes, ifnb.ctrl.dist.fit$ZINB_genes))
 ifnb.dist.ctrl$dist <- c(rep("Po", length(ifnb.ctrl.dist.fit$P_genes)), rep("NB", length(ifnb.ctrl.dist.fit$NB_genes)), rep("ZIP", length(ifnb.ctrl.dist.fit$ZIP_genes)), rep("ZINB", length(ifnb.ctrl.dist.fit$ZINB_genes)))
@@ -163,11 +166,11 @@ ifnb.dist.stim <- data.frame(gene = c(ifnb.stim.dist.fit$P_genes, ifnb.stim.dist
 ifnb.dist.stim$dist <- c(rep("Po", length(ifnb.stim.dist.fit$P_genes)), rep("NB", length(ifnb.stim.dist.fit$NB_genes)), rep("ZIP", length(ifnb.stim.dist.fit$ZIP_genes)), rep("ZINB", length(ifnb.stim.dist.fit$ZINB_genes)))
 
 #Dataframe consisting of distributions followed by each gene passing the KS test
-ifnb.KS.ctrl <- ifnb.dist.ctrl[ifnb.dist.ctrl$gene %in% ifnb.ks.sig,]
-ifnb.KS.stim <- ifnb.dist.stim[ifnb.dist.stim$gene %in% ifnb.ks.sig,]
+ifnb.gof.ctrl <- ifnb.dist.ctrl[ifnb.dist.ctrl$gene %in% ifnb.gof.sig,]
+ifnb.gof.stim <- ifnb.dist.stim[ifnb.dist.stim$gene %in% ifnb.gof.sig,]
 
-ifnb.distr <- data.frame(ctrl = ifnb.KS.ctrl$dist, row.names = ifnb.KS.ctrl$gene)
-ifnb.distr$stim <- ifnb.KS.stim$dist[match(rownames(ifnb.distr), ifnb.KS.stim$gene)]
+ifnb.distr <- data.frame(ctrl = ifnb.gof.ctrl$dist, row.names = ifnb.gof.ctrl$gene)
+ifnb.distr$stim <- ifnb.gof.stim$dist[match(rownames(ifnb.distr), ifnb.gof.stim$gene)]
 ```
 
 Using the dataframe of genes and distribution followed under each condition now we can identify genes changing distribution between 'CTRL' and 'STIM'

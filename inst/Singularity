@@ -49,11 +49,7 @@ From: ubuntu:18.04
 
   Rscript -e "install.packages('Matrix')"
   Rscript -e "install.packages('stats')"
-  Rscript -e "install.packages('parallelly')"
-  Rscript -e "install.packages('pscl')"
-  Rscript -e "install.packages('emdbook')"
-  Rscript -e "install.packages('future')"
-  Rscript -e "install.packages('future.apply')"
+  Rscript -e "install.packages('BiocManager')"
   Rscript -e "install.packages('pscl')"
   Rscript -e "install.packages('VGAM')"
   Rscript -e "install.packages('MASS')"
@@ -62,6 +58,7 @@ From: ubuntu:18.04
   Rscript -e "install.packages('dgof')"
   Rscript -e "install.packages('rmarkdown')"
   Rscript -e "install.packages('devtools')"
+  Rscript -e "BiocManager::install('BiocParallel')"
   Rscript -e "devtools::install_github('Malindrie/scShapes', dep=FALSE, build_vignettes=TRUE)"
 
   rm -rf /var/lib/apt/lists/*

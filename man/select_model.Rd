@@ -24,14 +24,11 @@ data(scData)
 # the gof_model function
 
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
-                            lib.size=scData$lib_size)
+                            lib.size=scData$lib_size, BPPARAM=bpparam())
 scData_bicvals <- model_bic(scData_models)
 scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
-scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size)
+scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size,
+BPPARAM=bpparam())
 
 scData_fit <- select_model(scData_gof)
-
-\dontshow{
-## Shut down parallel workers
-future::plan("sequential")}
 }

@@ -4,7 +4,7 @@
 \alias{ks_test}
 \title{ks_test}
 \usage{
-ks_test(counts, cexpr, lib.size, formula = NULL, workers = NULL, seed = NULL)
+ks_test(counts, cexpr, lib.size, formula = NULL, BPPARAM)
 }
 \arguments{
 \item{counts}{A non-negative integer matrix of scRNA-seq filtered read counts
@@ -21,11 +21,9 @@ per cell from the counts matrix from \code{filter_counts}.}
 
 \item{formula}{A regression formula to fit the covariates in the ZINB GLM.}
 
-\item{workers}{Number of workers to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}.}
-
-\item{seed}{Seed number to be used in parallel computation
-using \code{future.apply}, with argument \code{multisession}}
+\item{BPPARAM}{configuration parameter related to the method of parallel execution.
+For further information on how to set-up parallel execution refer to
+\code{BiocParallel} vignette.}
 }
 \value{
 List object containing the p-values from the
@@ -45,9 +43,5 @@ data(scData)
 # apply the ks_test function to subset genes belonging to the
 # family of ZINB distributions.
 
-scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
-
-\dontshow{
-## Shut down parallel workers
-future::plan("sequential")}
+scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=bpparam())
 }

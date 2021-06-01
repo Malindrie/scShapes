@@ -27,15 +27,12 @@
 #' # BIC value on the matrix of BIC values obtained after running
 #' # model_bic function.
 #'
-#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
+#' BPPARAM=bpparam())
 #'
 #' scData_bicvals <- model_bic(scData_models)
 #'
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
-#'
-#' \dontshow{
-#' ## Shut down parallel workers
-#' future::plan("sequential")}
 
 
 lbic_model <- function(bic.value, counts){

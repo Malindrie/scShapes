@@ -2,7 +2,7 @@ Package: scShapes
 Type: Package
 Title: A Statistical Framework for Modeling and Identifying Differential 
         Distributions in Single-cell RNA-sequencing Data
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: person("Malindrie", "Dharmaratne", role = c("cre", "aut"), 
                   email = "malindrie@gmail.com", 
                   comment = c(ORCID = "0000-0002-1694-6496"))
@@ -22,7 +22,7 @@ Description: We present a novel statistical framework for identifying
         by calculating the Bayesian Information Criterion (BIC) and likelihood 
         ratio test statistic. 
 NeedsCompilation: yes
-Imports: Matrix, stats, parallelly, future, future.apply, pscl, VGAM, dgof, 
+Imports: Matrix, stats, methods, BiocParallel, pscl, VGAM, dgof, 
         MASS, emdbook, magrittr, utils 
 License: GPL-3
 Encoding: UTF-8

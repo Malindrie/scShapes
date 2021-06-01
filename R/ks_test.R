@@ -18,25 +18,22 @@
 #'
 #' @param formula A regression formula to fit the covariates in the ZINB GLM.
 #'
-#' @param workers Number of workers to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}.
-#'
-#' @param seed Seed number to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}
+#' @param BPPARAM configuration parameter related to the method of parallel execution.
+#' For further information on how to set-up parallel execution refer to
+#' \code{BiocParallel} vignette.
 #'
 #' @export
 #'
+#' @importFrom methods is
 #' @importFrom stats as.formula
 #' @importFrom stats ecdf
-#' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
-#' @importFrom future plan
-#' @importFrom future multisession
-#' @importFrom future.apply future_lapply
 #' @importFrom pscl zeroinfl
 #' @importFrom VGAM predict
 #' @importFrom VGAM rzinegbin
 #' @importFrom dgof ks.test
+#' @importFrom BiocParallel bplapply
+#' @importFrom BiocParallel bpparam
 #'
 #' @return List object containing the p-values from the
 #' KS test.
@@ -50,30 +47,21 @@
 #' # apply the ks_test function to subset genes belonging to the
 #' # family of ZINB distributions.
 #'
-#' scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
-#'
-#' \dontshow{
-#' ## Shut down parallel workers
-#' future::plan("sequential")}
+#' scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=bpparam())
+
 
 
 ks_test <- function(counts, cexpr, lib.size,
-                    formula=NULL, workers=NULL,
-                    seed=NULL){
+                    formula=NULL, BPPARAM){
 
-  if(is.null(workers)) {
-    workers <- min(4, parallelly::availableCores())
-  }
-  if(is.null(seed)) {
-    seed <- 0xBEEF
-  }
+  set.seed(0xBEEF)
 
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)
   if(is.null(formula)) {
     message(sprintf("Formulating the additive model..."))
     formula <- 'x ~ 1 '
-    if(!identical(covariates, character(0))) {
+    if(!identical(covariates, NULL)) {
       for (covar in covariates) {
         formula <- paste(formula, sprintf(' + %s', covar))
       }
@@ -82,19 +70,19 @@ ks_test <- function(counts, cexpr, lib.size,
   formula <- as.formula(formula)
 
   #convert data to lists
-  gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
-
-  #set-up multisession
-  oplan <- future::plan(future::multisession, workers = workers)
-  on.exit(plan(oplan))
+  if(!identical(covariates, NULL)) {
+    gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
+  } else{
+    gexpr <- apply(counts, 1, function (x) as.list(as.data.frame(x)))
+  }
 
   #KS test with simulated p-values
   message(sprintf("Performing the KS test..."))
   KS_ZINB <- function(data, formula, lib.size){
 
-    m1 <- try(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
+    m1 <- tryCatch(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), error = function(e) {print(e$message)})
 
-    if(!is(m1, "try-error")){
+    if(!is(m1, "character")){
       pi_ML = predict(m1, type = "zero")
       theta_ML = m1$theta
       mean_ML = predict(m1, type = "count")
@@ -108,11 +96,11 @@ ks_test <- function(counts, cexpr, lib.size,
 
     if(!is(ccc, "character")){
 
-      pp <- try(VGAM::rzinegbin(n = length(data$x),
+      pp <- tryCatch(VGAM::rzinegbin(n = length(data$x),
                           size = ccc[2,],
                           munb = ccc[3,],
                           pstr0 = ccc[1,]),
-                          silent = TRUE)
+                     error = function(e) {print(e$message)})
     }
     else {
       pp <- "NA"
@@ -120,7 +108,7 @@ ks_test <- function(counts, cexpr, lib.size,
 
     if(!is(pp, "character")){
 
-      D <- try(dgof::ks.test(data$x, ecdf(pp), simulate.p.value = TRUE)$p.value, silent = TRUE)
+      D <- tryCatch(dgof::ks.test(data$x, ecdf(pp), simulate.p.value = TRUE)$p.value, error = function(e) {print(e$message)})
     }
     else {
       D <- "NA"
@@ -137,11 +125,20 @@ ks_test <- function(counts, cexpr, lib.size,
     return(p_value)
   }
 
-  ks.pval.unadj <- future.apply::future_lapply(gexpr,
-                                               FUN = KS_ZINB,
-                                               formula <- formula,
-                                               lib.size <- lib.size,
-                                               future.seed=TRUE)
+
+  if(identical(covariates, NULL)) {
+    ks.pval.unadj <- BiocParallel::bplapply(gexpr,
+                                            FUN = KS_ZINB,
+                                            BPPARAM = BPPARAM,
+                                            formula <- formula,
+                                            lib.size <- lib.size)
+  } else {
+    ks.pval.unadj <- BiocParallel::bplapply(gexpr,
+                                            FUN = KS_ZINB,
+                                            BPPARAM = BPPARAM,
+                                            formula <- formula,
+                                            lib.size <- lib.size)
+  }
   return(ks.pval.unadj)
 
 }

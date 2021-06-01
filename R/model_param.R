@@ -24,17 +24,16 @@
 #' # apply the model_param function to extract the parameters of the best fit
 #' # model obtained by running the select_model function
 #'
-#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size)
+#' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
+#' BPPARAM=bpparam())
 #' scData_bicvals <- model_bic(scData_models)
 #' scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
-#' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size)
+#' scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size,
+#' BPPARAM=bpparam())
 #' scData_fit <- select_model(scData_gof)
 #'
 #' scData_params <- model_param(scData_models, scData_fit, model=NULL)
-#'
-#' \dontshow{
-#' ## Shut down parallel workers
-#' future::plan("sequential")}
+
 
 model_param <- function(fit.model, gof.res,
                         model=NULL){
@@ -76,7 +75,7 @@ model_param <- function(fit.model, gof.res,
     mean_ML = predict(m1, type = "count")
 
     pi_theta_mean <- c(pi_ML, theta_ML, mean_ML)
-    names(pi_theta_mean)[seq_along(1:2)] <- c("pi", "theta")
+    names(pi_theta_mean)[seq_len(2)] <- c("pi", "theta")
     return(pi_theta_mean)
   }
 

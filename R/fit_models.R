@@ -16,25 +16,21 @@
 #'
 #' @param formula A regression formula to fit the covariates in the ZINB GLM.
 #'
-#' @param workers Number of workers to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}.
-#'
-#' @param seed Seed number to be used in parallel computation
-#' using \code{future.apply}, with argument \code{multisession}
-#'
 #' @param model A specific model to fit (1:P, 2:NB, 3:ZIP, 4:ZINB, NULL:All)
+#'
+#' @param BPPARAM configuration parameter related to the method of parallel execution.
+#' For further information on how to set-up parallel execution refer to
+#' \code{BiocParallel} vignette.
 #'
 #' @export
 #'
 #' @importFrom stats glm
 #' @importFrom stats as.formula
-#' @importFrom parallelly availableCores
 #' @importFrom Matrix Matrix
-#' @importFrom future.apply future_apply
 #' @importFrom pscl zeroinfl
 #' @importFrom MASS glm.nb
-#' @importFrom future plan
-#' @importFrom future multisession
+#' @importFrom BiocParallel bplapply
+#' @importFrom BiocParallel bpparam
 #'
 #' @return A list of models fitted by 'glm'
 #'
@@ -46,30 +42,21 @@
 #' # family of ZINB distributions, selceted from ks_test function.
 #'
 #' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
-#' lib.size=scData$lib_size)
-#'
-#' \dontshow{
-#' ## Shut down parallel workers
-#' future::plan("sequential")}
+#' lib.size=scData$lib_size, BPPARAM=bpparam())
 
 
 fit_models <- function(counts, cexpr, lib.size,
-                       formula=NULL, workers=NULL,
-                       seed=NULL, model=NULL){
+                       formula=NULL,model=NULL,
+                       BPPARAM){
 
-  if(is.null(workers)) {
-    workers <- min(4, parallelly::availableCores())
-  }
-  if(is.null(seed)) {
-    seed <- 0xBEEF
-  }
+  set.seed(0xBEEF)
 
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)
   if(is.null(formula)) {
     message(sprintf("Formulating the additive model..."))
     formula <- 'x ~ 1 '
-    if(!identical(covariates, character(0))) {
+    if(!identical(covariates, NULL)) {
       for (covar in covariates) {
         formula <- paste(formula, sprintf(' + %s', covar))
       }
@@ -80,30 +67,30 @@ fit_models <- function(counts, cexpr, lib.size,
   f_nb <- as.formula(paste(formula, ' + offset(log(lib.size))'))
 
   #convert data to lists
-  gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
-
-  #set-up multisession
-  oplan <- future::plan(future::multisession, workers = workers)
-  on.exit(plan(oplan))
+  if(!identical(covariates, NULL)) {
+    gexpr <- apply(counts, 1, function (x) cbind(x,cexpr))
+  } else{
+    gexpr <- apply(counts, 1, function (x) as.list(as.data.frame(x)))
+  }
 
   #Fit the four distributions
   model_poi <- function(data, formula, lib.size){
-    try(stats::glm(formula, data, offset=log(lib.size), family = "poisson"), silent = TRUE)
+    tryCatch(stats::glm(formula, data, offset=log(lib.size), family = "poisson"), error = function(e) {print(e$message)})
   }
 
 
   model_nb <- function(data, formula, lib.size){
-    try(MASS::glm.nb(formula, data), silent = TRUE)
+    tryCatch(MASS::glm.nb(formula, data), error = function(e) {print(e$message)})
   }
 
 
   model_zip <- function(data, formula, lib.size){
-    try(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"), silent = TRUE)
+    tryCatch(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "poisson"), error = function(e) {print(e$message)})
   }
 
 
   model_zinb <- function(data, formula, lib.size){
-    try(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), silent = TRUE)
+    tryCatch(pscl::zeroinfl(formula, data, offset=log(lib.size), dist = "negbin"), error = function(e) {print(e$message)})
   }
 
 
@@ -111,69 +98,67 @@ fit_models <- function(counts, cexpr, lib.size,
 
   if(is.null(model) || 1 %in% model) {
     message('Fitting data with Poisson model...')
-    if(identical(covariates, character(0))) {
-      fitting[["P"]] <-   future.apply::future_lapply(gexpr,
-                                                      FUN = model_poi,
-                                                      formula = f_oth,
-                                                      lib.size = lib.size,
-                                                      future.seed=TRUE)
+    if(identical(covariates, NULL)) {
+      fitting[["P"]] <-   lapply(gexpr,
+                                 FUN = model_poi,
+                                 formula = f_oth,
+                                 lib.size = lib.size)
     } else {
-      fitting[["P"]] <- future.apply::future_lapply(gexpr,
-                                                    FUN = model_poi,
-                                                    formula = f_oth,
-                                                    lib.size = lib.size,
-                                                    future.seed=TRUE)
+      fitting[["P"]] <- lapply(gexpr,
+                               FUN = model_poi,
+                               formula = f_oth,
+                               lib.size = lib.size)
     }
   }
 
   if(is.null(model) || 2 %in% model) {
     message('Fitting data with Negative Binomial model...')
-    if(identical(covariates, character(0))) {
-      fitting[["NB"]] <-   future.apply::future_lapply(gexpr,
-                                                       FUN = model_nb,
-                                                       formula = f_nb,
-                                                       lib.size = lib.size,
-                                                       future.seed=TRUE)
+    if(identical(covariates, NULL)) {
+      fitting[["NB"]] <-   BiocParallel::bplapply(gexpr,
+                                                  FUN = model_nb,
+                                                  BPPARAM = BPPARAM,
+                                                  formula = f_nb,
+                                                  lib.size = lib.size)
     } else {
-      fitting[["NB"]] <- future.apply::future_lapply(gexpr,
-                                                     FUN = model_nb,
-                                                     formula = f_nb,
-                                                     lib.size = lib.size,
-                                                     future.seed=TRUE)
+      fitting[["NB"]] <- BiocParallel::bplapply(gexpr,
+                                                FUN = model_nb,
+                                                BPPARAM = BPPARAM,
+                                                formula = f_nb,
+                                                lib.size = lib.size)
     }
   }
 
   if(is.null(model) || 3 %in% model) {
     message('Fitting data with Zero Inflated Poisson model...')
-    if(identical(covariates, character(0))) {
-      fitting[["ZIP"]] <-   future.apply::future_lapply(gexpr,
-                                                       FUN = model_zip,
-                                                       formula = f_oth,
-                                                       lib.size = lib.size,
-                                                       future.seed=TRUE)
+    if(identical(covariates, NULL)) {
+      fitting[["ZIP"]] <-   BiocParallel::bplapply(gexpr,
+                                                   FUN = model_zip,
+                                                   BPPARAM = BPPARAM,
+                                                   formula = f_oth,
+                                                   lib.size = lib.size)
     } else {
-      fitting[["ZIP"]] <- future.apply::future_lapply(gexpr,
-                                                     FUN = model_zip,
-                                                     formula = f_oth,
-                                                     lib.size = lib.size,
-                                                     future.seed=TRUE)
+      fitting[["ZIP"]] <- BiocParallel::bplapply(gexpr,
+                                                 FUN = model_zip,
+                                                 BPPARAM = BPPARAM,
+                                                 formula = f_oth,
+                                                 lib.size = lib.size)
     }
   }
 
   if(is.null(model) || 4 %in% model) {
     message('Fitting data with Zero Inflated Negative Binomial model...')
-    if(identical(covariates, character(0))) {
-      fitting[["ZINB"]] <-   future.apply::future_lapply(gexpr,
-                                                       FUN = model_zinb,
-                                                       formula = f_oth,
-                                                       lib.size = lib.size,
-                                                       future.seed=TRUE)
+    if(identical(covariates, NULL)) {
+      fitting[["ZINB"]] <-   BiocParallel::bplapply(gexpr,
+                                                    FUN = model_zinb,
+                                                    BPPARAM = BPPARAM,
+                                                    formula = f_oth,
+                                                    lib.size = lib.size)
     } else {
-      fitting[["ZINB"]] <- future.apply::future_lapply(gexpr,
-                                                     FUN = model_zinb,
-                                                     formula = f_oth,
-                                                     lib.size = lib.size,
-                                                     future.seed=TRUE)
+      fitting[["ZINB"]] <- BiocParallel::bplapply(gexpr,
+                                                  FUN = model_zinb,
+                                                  BPPARAM = BPPARAM,
+                                                  formula = f_oth,
+                                                  lib.size = lib.size)
     }
   }
 
