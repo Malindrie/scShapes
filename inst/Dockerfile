@@ -4,8 +4,7 @@
 FROM r-base
 
 LABEL org.label-schema.license="GPLv3.0" \
-      maintainer="Malindrie Dharmaratne, <malindrie@gmail.com>" \
-      version="0.99.0"
+      maintainer="Malindrie Dharmaratne, <malindrie@gmail.com>"
 
 # system libraries of general use
 RUN apt-get update \
