@@ -22,11 +22,10 @@ Description: We present a novel statistical framework for identifying
         by calculating the Bayesian Information Criterion (BIC) and likelihood 
         ratio test statistic. 
 NeedsCompilation: yes
-Imports: Matrix, stats, methods, BiocParallel, pscl, VGAM, dgof, 
+Imports: Matrix, stats, methods, pscl, VGAM, dgof, 
         MASS, emdbook, magrittr, utils 
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.1
 URL: https://github.com/Malindrie/scShapes
 BugReports: https://github.com/Malindrie/scShapes/issues
@@ -38,4 +37,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 biocViews: RNASeq, SingleCell, MultipleComparison, GeneExpression
 Depends: 
-    R (>= 4.1)
+    R (>= 4.1), BiocParallel
