@@ -16,7 +16,7 @@ cache:
 environment:
   NOT_CRAN: true
   R_VERSION: release
-  BIOC_USE_DEVEL: TRUE
+  BIOC_USE_DEVEL: FALSE
   # env vars that may need to be set, at least temporarily, from time to time
   # see https://github.com/krlmlr/r-appveyor#readme for details
   USE_RTOOLS: true
@@ -26,6 +26,7 @@ environment:
 
 build_script:
   - travis-tool.sh install_deps
+  - travis-tool.sh github_package r-lib/covr Bioconductor/BiocManager
   - travis-tool.sh install_bioc_deps
 
 
