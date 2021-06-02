@@ -20,6 +20,7 @@
 #' # apply the model_bic function to calculate the BIC values on the models
 #' # obtained after running fit_models function.
 #'
+#' library(BiocParallel)
 #' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
 #' BPPARAM=bpparam())
 #'

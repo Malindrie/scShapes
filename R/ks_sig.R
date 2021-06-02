@@ -21,6 +21,7 @@
 #' # apply the ks_test function to subset genes belonging to the
 #' # family of ZINB distributions.
 #'
+#' library(BiocParallel)
 #' scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=bpparam())
 #'
 #' # apply the ks_sig function to select genes significant from

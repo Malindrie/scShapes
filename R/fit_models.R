@@ -41,6 +41,7 @@
 #' # apply the fit_models function to subset genes belonging to the
 #' # family of ZINB distributions, selceted from ks_test function.
 #'
+#' library(BiocParallel)
 #' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
 #' lib.size=scData$lib_size, BPPARAM=bpparam())
 
@@ -49,7 +50,6 @@ fit_models <- function(counts, cexpr, lib.size,
                        formula=NULL,model=NULL,
                        BPPARAM){
 
-  set.seed(0xBEEF)
 
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)

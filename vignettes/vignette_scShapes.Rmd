@@ -42,6 +42,7 @@ devtools::install_github('Malindrie/scShapes')
 ```{r setup}
 library(scShapes)
 library(BiocParallel)
+set.seed(0xBEEF)
 ```
 
 ## Example

@@ -32,6 +32,7 @@ data(scData)
 # BIC value on the matrix of BIC values obtained after running
 # model_bic function.
 
+library(BiocParallel)
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
 BPPARAM=bpparam())
 

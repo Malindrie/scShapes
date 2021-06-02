@@ -23,6 +23,7 @@ data(scData)
 # apply the select_model function to the best fit model from the results of
 # the gof_model function
 
+library(BiocParallel)
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates,
                             lib.size=scData$lib_size, BPPARAM=bpparam())
 scData_bicvals <- model_bic(scData_models)

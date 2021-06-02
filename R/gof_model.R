@@ -41,6 +41,7 @@
 #' # apply the gof_model function to perform the likelihood ratio
 #' # test on the models selected by using the lbic_model function
 #'
+#' library(BiocParallel)
 #' scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
 #' BPPARAM=bpparam())
 #' scData_bicvals <- model_bic(scData_models)
@@ -53,8 +54,6 @@
 gof_model <- function(lbic, cexpr, lib.size,
                       formula=NULL, BPPARAM){
 
-
-  set.seed(0xBEEF)
 
   #Formulate a simple additive model using all the covariates in 'cexpr'
   covariates <- names(cexpr)

@@ -38,6 +38,7 @@ data(scData)
 # apply the gof_model function to perform the likelihood ratio
 # test on the models selected by using the lbic_model function
 
+library(BiocParallel)
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
 BPPARAM=bpparam())
 scData_bicvals <- model_bic(scData_models)

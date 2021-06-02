@@ -29,6 +29,7 @@ data(scData)
 # apply the model_param function to extract the parameters of the best fit
 # model obtained by running the select_model function
 
+library(BiocParallel)
 scData_models <- fit_models(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size,
 BPPARAM=bpparam())
 scData_bicvals <- model_bic(scData_models)

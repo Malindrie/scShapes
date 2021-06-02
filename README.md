@@ -64,6 +64,7 @@ library(Seurat)
 library(SeuratData)
 library(dplyr)
 library(BiocParallel)
+set.seed(0xBEEF)
 
 InstallData("ifnb")
 LoadData("ifnb")
