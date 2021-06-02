@@ -28,6 +28,7 @@ From: ubuntu:18.04
         libv8-dev \
         libxml2-dev \
         libhdf5-serial-dev
+    apt-get install -y pandoc
     apt-get -y install libcurl4-openssl-dev libssl-dev
     echo "LC_ALL=en_US.UTF-8" >> /etc/environment
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen

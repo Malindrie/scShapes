@@ -14,6 +14,7 @@ RUN apt-get update \
       libssl-dev \
       libcurl4-openssl-dev \
       libxml2-dev \
+      pandoc \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
