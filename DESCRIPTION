@@ -2,7 +2,7 @@ Package: scShapes
 Type: Package
 Title: A Statistical Framework for Modeling and Identifying Differential 
         Distributions in Single-cell RNA-sequencing Data
-Version: 0.99.5
+Version: 0.99.6
 Authors@R: person("Malindrie", "Dharmaratne", role = c("cre", "aut"), 
                   email = "malindrie@gmail.com", 
                   comment = c(ORCID = "0000-0002-1694-6496"))
@@ -20,7 +20,7 @@ Description: We present a novel statistical framework for identifying
         belonging to the family of ZINB distributions. Genes passing the 
         KS test will be then modeled using GLMs. Model selection is done 
         by calculating the Bayesian Information Criterion (BIC) and likelihood 
-        ratio test statistic. 
+        ratio test (LRT) statistic. 
 NeedsCompilation: yes
 Imports: Matrix, stats, methods, pscl, VGAM, dgof, BiocParallel,  
         MASS, emdbook, magrittr, utils 
