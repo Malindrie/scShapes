@@ -69,7 +69,7 @@ In order to normalize for differences in sequencing depth, the log of the total 
 Perform Kolmogorov-Smirnov test to select genes belonging to the family of ZINB distributions.
 
 ```{r message=FALSE, warning=FALSE}
-scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=bpparam())
+scData_KS <- ks_test(counts=scData$counts, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=SnowParam(workers=8,type="SOCK"))
 
 # Select genes significant from the KS test.
 # By default the 'ks_sig' function performs Benjamini-Hochberg correction for multiple   hypothese testing
@@ -84,7 +84,7 @@ scData.sig.genes <- scData$counts[rownames(scData$counts) %in% names(scData_KS_s
 Fit the 4 distributions P,NB,ZIP,ZINB for genes that belong to the ZINB family of distributions by fitting GLM with log of the library sizes as an offset and cell types as a covariate in the GLM.
 
 ```{r message=FALSE, warning=FALSE}
-scData_models <- fit_models(counts=scData.sig.genes, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=bpparam())
+scData_models <- fit_models(counts=scData.sig.genes, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=SnowParam(workers=8,type="SOCK"))
 ```
 
 Once the 4 distributions are fitted, we next calculate the BIC value for each model and select the model with the least BIC value.
@@ -99,7 +99,7 @@ scData_least.bic <- lbic_model(scData_bicvals, scData$counts)
 To ensure the fit of the models selected based on the least BIC value, additionally we perform LRT to test for model adequacy and presence of zero-inflation.
 
 ```{r message=FALSE, warning=FALSE}
-scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=bpparam())
+scData_gof <- gof_model(scData_least.bic, cexpr=scData$covariates, lib.size=scData$lib_size, BPPARAM=SnowParam(workers=8,type="SOCK"))
 ```
 
 Finally based on the results of the model adequacy tests, we can identify the distribution of best fit for each gene. 

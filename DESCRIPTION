@@ -2,7 +2,7 @@ Package: scShapes
 Type: Package
 Title: A Statistical Framework for Modeling and Identifying Differential 
         Distributions in Single-cell RNA-sequencing Data
-Version: 0.99.6
+Version: 0.99.7
 Authors@R: person("Malindrie", "Dharmaratne", role = c("cre", "aut"), 
                   email = "malindrie@gmail.com", 
                   comment = c(ORCID = "0000-0002-1694-6496"))

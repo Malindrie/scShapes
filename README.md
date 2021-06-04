@@ -121,8 +121,8 @@ Perform Kolmogorov-Smirnov test to select genes belonging to the family
 of ZINB distributions.
 
 ``` r
-ifnb.ctrl.KS <- ks_test(ifnb.subset$CTRL, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL, BPPARAM=SnowParam(workers=4,type="SOCK"))
-ifnb.stim.KS <- ks_test(ifnb.subset$STIM, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM, BPPARAM=SnowParam(workers=4,type="SOCK"))
+ifnb.ctrl.KS <- ks_test(ifnb.subset$CTRL, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL, BPPARAM=SnowParam(workers=8,type="SOCK"))
+ifnb.stim.KS <- ks_test(ifnb.subset$STIM, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM, BPPARAM=SnowParam(workers=8,type="SOCK"))
 
 #Select genes significant from the KS test.
 #By default the 'ks_sig' function performs Benjamini-Hochberg correction for multiple hypothese testing
@@ -143,8 +143,8 @@ family of distributions by fitting GLM with log of the library sizes as
 an offset and cell types as a covariate in the GLM.
 
 ``` r
-ifnb.ctrl.fit <- fit_models(counts=ifnb.ctrl.KS, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL, BPPARAM=SnowParam(workers=4,type="SOCK"))
-ifnb.stim.fit <- fit_models(counts=ifnb.stim.KS, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM, BPPARAM=SnowParam(workers=4,type="SOCK"))
+ifnb.ctrl.fit <- fit_models(counts=ifnb.ctrl.KS, cexpr=ifnb.variables$CTRL, lib.size=ifnb.lib.size$CTRL, BPPARAM=SnowParam(workers=2,type="SOCK"))
+ifnb.stim.fit <- fit_models(counts=ifnb.stim.KS, cexpr=ifnb.variables$STIM, lib.size=ifnb.lib.size$STIM, BPPARAM=SnowParam(workers=2,type="SOCK"))
 ```
 
 Once the 4 distributions are fitted, we next calculate the BIC value for
