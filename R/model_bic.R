@@ -9,7 +9,6 @@
 #'
 #' @importFrom stats BIC
 #' @importFrom methods is
-#' @import pscl
 #'
 #' @return A dataframe containing the BIC values for each distribution type (P, NB, ZIP, ZINB).
 #'
@@ -43,7 +42,6 @@ model_bic <- function(fit_list){
 
 
 model_BIC <- function(z){
-  library(pscl)
   ifelse((!is(z, "character")),
          stats::BIC(z), "NA")
 }
