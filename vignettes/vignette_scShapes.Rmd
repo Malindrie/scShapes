@@ -123,3 +123,11 @@ ifnb.DD.genes <- change_shape(ifnb.distr)
 ```
 This will give a list of two lists with genes changing distribution between condition and genes changing distribution from unimodal in one condition to zero-inflated in the other condition.  
 
+# Session Information
+
+Here is the output of sessionInfo() on the system on which this document 
+was compiled:
+
+```{r}
+sessionInfo()
+```
