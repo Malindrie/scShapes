@@ -29,10 +29,6 @@ build_script:
   - travis-tool.sh github_package r-lib/covr Bioconductor/BiocManager
   - travis-tool.sh install_bioc_deps
 
-environment:
-  access_token:
-    secure: dVzyyoXwrLHFtO0CEy7U9qCI0zySDdsGZinnqUxVWpjBHJU9bZ7W2/NWQ9SuzzBO
-
 test_script:
   - travis-tool.sh run_tests
 
