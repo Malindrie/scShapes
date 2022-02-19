@@ -11,7 +11,7 @@ Description: We present a novel statistical framework for identifying
         (scRNA-seq) data between treatment conditions by modeling gene 
         expression read counts using generalized linear models (GLMs). 
         We model each gene independently under each treatment condition 
-        using error distributions Poisson (P), Negative Binomial (NB), 
+        using error distributions Poisson, Negative Binomial (NB), 
         Zero-inflated Poisson (ZIP) and Zero-inflated Negative Binomial (ZINB) 
         with log link function and model based normalization for differences 
         in sequencing depth. Since all four distributions considered in 
