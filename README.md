@@ -36,6 +36,9 @@ that do not involve the change in mean. It also has the flexibility to
 adjust for covariates and perform multiple comparisons while explicitly
 modeling the variability between samples.
 
+You can view the preprint of our method in
+[bioRxiv](https://www.biorxiv.org/content/10.1101/2022.02.13.480299v1)
+
 ## Installation
 
 You can install the released version of scShapes with:
