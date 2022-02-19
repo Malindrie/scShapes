@@ -25,6 +25,8 @@ We present a novel statistical framework for identifying differential distributi
 
 While most methods for differential gene expression analysis aim to detect a shift in the mean of expressed values, single cell data are driven by over-dispersion and dropouts requiring statistical distributions that can handle the excess zeros. By modeling gene expression distributions, our framework can identify subtle variations that do not involve the change in mean. It also has the flexibility to adjust for covariates and perform multiple comparisons while explicitly modeling the variability between samples.
 
+You can view the preprint of our method in [bioRxiv](https://www.biorxiv.org/content/10.1101/2022.02.13.480299v1)
+
 ## Installation
 
 You can install the released version of scShapes with:

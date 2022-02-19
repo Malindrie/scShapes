@@ -2,7 +2,7 @@ Package: scShapes
 Type: Package
 Title: A Statistical Framework for Modeling and Identifying Differential 
         Distributions in Single-cell RNA-sequencing Data
-Version: 0.99.8
+Version: 0.99.9
 Authors@R: person("Malindrie", "Dharmaratne", role = c("cre", "aut"), 
                   email = "malindrie@gmail.com", 
                   comment = c(ORCID = "0000-0002-1694-6496"))
@@ -26,10 +26,11 @@ Imports: Matrix, stats, methods, pscl, VGAM, dgof, BiocParallel,
         MASS, emdbook, magrittr, utils 
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 URL: https://github.com/Malindrie/scShapes
 BugReports: https://github.com/Malindrie/scShapes/issues
-Suggests: 
+Suggests:
+    covr,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
