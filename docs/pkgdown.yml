@@ -1,7 +1,7 @@
-pandoc: 2.7.3
+pandoc: 2.14.0.1
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   vignette_scShapes: vignette_scShapes.html
-last_built: 2021-02-16T06:40Z
+last_built: 2022-02-19T04:05Z
 

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scShapes</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -58,6 +58,9 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -76,13 +79,13 @@
 
       
 
-      </header><script src="vignette_scShapes_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="vignette_scShapes_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>The vignette for running scShapes</h1>
                         <h4 class="author">Malindrie Dharmaratne</h4>
             
-            <h4 class="date">‘r Sys.Date()’</h4>
+            <h4 class="date">2022-02-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Malindrie/scShapes/blob/master/vignettes/vignette_scShapes.Rmd"><code>vignettes/vignette_scShapes.Rmd</code></a></small>
       <div class="hidden name"><code>vignette_scShapes.Rmd</code></div>
@@ -91,19 +94,131 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div id="pulling-and-running-singularity-container" class="section level2">
+<h2 class="hasAnchor">
+<a href="#pulling-and-running-singularity-container" class="anchor"></a>Pulling and running singularity container</h2>
+<pre><code>$ singularity pull --name scShapes.sif shub://Malindrie/scShapes
+$ singularity shell scShapes.sif
+Singularity scShapes.sif:~ &gt; </code></pre>
+</div>
+<div id="pulling-and-running-docker-container" class="section level2">
+<h2 class="hasAnchor">
+<a href="#pulling-and-running-docker-container" class="anchor"></a>Pulling and running docker container</h2>
+<pre><code>$ docker pull maldharm/scshapes
+$ docker run -it maldharm/scshapes
+root@516e456b0762:/#</code></pre>
+<p>To use containerized <code>scShapes</code> package, need to launch <code>R</code> or execute an R script through <code>Rscript</code>.</p>
+</div>
+<div id="install-scshapes-from-install_github" class="section level2">
+<h2 class="hasAnchor">
+<a href="#install-scshapes-from-install_github" class="anchor"></a>Install <code>scShapes</code> from <code>install_github</code>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'Malindrie/scShapes'</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Malindrie/scShapes">scShapes</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: replacing previous import 'dplyr::filter' by 'stats::filter' when</span>
-<span class="co">#&gt; loading 'scShapes'</span>
-<span class="co">#&gt; Warning: replacing previous import 'dplyr::lag' by 'stats::lag' when loading</span>
-<span class="co">#&gt; 'scShapes'</span>
-<span class="co">#&gt; Warning: replacing previous import 'stats::ks.test' by 'dgof::ks.test' when</span>
-<span class="co">#&gt; loading 'scShapes'</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel">BiocParallel</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">0xBEEF</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example" class="anchor"></a>Example</h2>
+<p>This is a basic example which shows how you can use scShapes for identifying differential distributions in single-cell RNA-seq data. For this example data we use the toy example data <code>scData</code> included in the package.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="co"># Loading and preparing data for input </span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">scData</span><span class="op">)</span></code></pre></div>
+<p>We first filter the genes to keep only genes expressed in at least 10% of cells:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">scData_filt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_counts.html">filter_counts</a></span><span class="op">(</span><span class="va">scData</span><span class="op">$</span><span class="va">counts</span>, perc.zero <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+<p>In order to normalize for differences in sequencing depth, the log of the total UMI counts assigned per cell will be used as an offset in the GLM. This function is inbuilt in the algorithm; however the user is required to input the library sizes. In our example data this information together with the covariates is given under the lists <code>lib_size</code> and <code>covariates</code> respectively.</p>
+<p>Perform Kolmogorov-Smirnov test to select genes belonging to the family of ZINB distributions.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scData_KS</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ks_test.html">ks_test</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">counts</span>, cexpr<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">covariates</span>, lib.size<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">lib_size</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">8</span>,type<span class="op">=</span><span class="st">"SOCK"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Select genes significant from the KS test.</span>
+<span class="co"># By default the 'ks_sig' function performs Benjamini-Hochberg correction for multiple   hypothese testing</span>
+<span class="co"># and selects genes significant at p-value of 0.01</span>
+
+<span class="va">scData_KS_sig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ks_sig.html">ks_sig</a></span><span class="op">(</span><span class="va">scData_KS</span><span class="op">)</span>
+
+<span class="co"># Subset UMI counts corresponding to the genes significant from the KS test</span>
+<span class="va">scData.sig.genes</span> <span class="op">&lt;-</span> <span class="va">scData</span><span class="op">$</span><span class="va">counts</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">scData</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">scData_KS_sig</span><span class="op">$</span><span class="va">genes</span><span class="op">)</span>,<span class="op">]</span></code></pre></div>
+<p>Fit the 4 distributions P,NB,ZIP,ZINB for genes that belong to the ZINB family of distributions by fitting GLM with log of the library sizes as an offset and cell types as a covariate in the GLM.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scData_models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_models.html">fit_models</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">scData.sig.genes</span>, cexpr<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">covariates</span>, lib.size<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">lib_size</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">8</span>,type<span class="op">=</span><span class="st">"SOCK"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Once the 4 distributions are fitted, we next calculate the BIC value for each model and select the model with the least BIC value.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scData_bicvals</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_bic.html">model_bic</a></span><span class="op">(</span><span class="va">scData_models</span><span class="op">)</span>
+
+<span class="co"># select model with least bic value</span>
+<span class="va">scData_least.bic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lbic_model.html">lbic_model</a></span><span class="op">(</span><span class="va">scData_bicvals</span>, <span class="va">scData</span><span class="op">$</span><span class="va">counts</span><span class="op">)</span></code></pre></div>
+<p>To ensure the fit of the models selected based on the least BIC value, additionally we perform LRT to test for model adequacy and presence of zero-inflation.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scData_gof</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gof_model.html">gof_model</a></span><span class="op">(</span><span class="va">scData_least.bic</span>, cexpr<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">covariates</span>, lib.size<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">lib_size</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/SnowParam-class.html">SnowParam</a></span><span class="op">(</span>workers<span class="op">=</span><span class="fl">8</span>,type<span class="op">=</span><span class="st">"SOCK"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Finally based on the results of the model adequacy tests, we can identify the distribution of best fit for each gene.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scData_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/select_model.html">select_model</a></span><span class="op">(</span><span class="va">scData_gof</span><span class="op">)</span></code></pre></div>
+<p>Once the distribution of best fit is identified for genes of interest, it is also possible to extract parameters of interest for the models.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scData_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_param.html">model_param</a></span><span class="op">(</span><span class="va">scData_models</span>, <span class="va">scData_fit</span>, model<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+<p>If our dataset consists of multiple conditions we can follow the above approach to identify the best fir distribution shape for each gene under each treatment condition (selecting the subset of genes common between conditions). Then using the dataframe of genes and distribution followed under each condition, now we can identify genes changing distribution between conditions.</p>
+<p>For example suppose we follow above pipeline for scRNA-seq data on two treatment conditions ‘CTRL’ and ‘STIM’ and have identified the best distribution fit for each gene under each condition independently. Suppose the dataframe <code>ifnb.distr</code>; with genes as rows and columns as ‘CTRL’ and ‘STIM’ with the corresponding distribution name a particular gene follows, then we can identify genes changing distribution shape between ‘CTRL’ and ‘STIM’ as;</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ifnb.DD.genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/change_shape.html">change_shape</a></span><span class="op">(</span><span class="va">ifnb.distr</span><span class="op">)</span></code></pre></div>
+<p>This will give a list of two lists with genes changing distribution between condition and genes changing distribution from unimodal in one condition to zero-inflated in the other condition.</p>
+</div>
+<div id="session-information" class="section level1">
+<h1 class="hasAnchor">
+<a href="#session-information" class="anchor"></a>Session Information</h1>
+<p>Here is the output of sessionInfo() on the system on which this document was compiled:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; R version 4.1.1 (2021-08-10)</span>
+<span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
+<span class="co">#&gt; Running under: Windows 10 x64 (build 17763)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Matrix products: default</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; locale:</span>
+<span class="co">#&gt; [1] LC_COLLATE=English_Australia.1252  LC_CTYPE=English_Australia.1252   </span>
+<span class="co">#&gt; [3] LC_MONETARY=English_Australia.1252 LC_NUMERIC=C                      </span>
+<span class="co">#&gt; [5] LC_TIME=English_Australia.1252    </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; attached base packages:</span>
+<span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; other attached packages:</span>
+<span class="co">#&gt; [1] BiocParallel_1.26.1 scShapes_0.99.9    </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; loaded via a namespace (and not attached):</span>
+<span class="co">#&gt;  [1] Rcpp_1.0.8          plyr_1.8.6          bslib_0.3.1        </span>
+<span class="co">#&gt;  [4] compiler_4.1.1      jquerylib_0.1.4     tools_4.1.1        </span>
+<span class="co">#&gt;  [7] digest_0.6.29       jsonlite_1.7.3      evaluate_0.14      </span>
+<span class="co">#&gt; [10] memoise_2.0.0       lattice_0.20-45     rlang_1.0.1        </span>
+<span class="co">#&gt; [13] Matrix_1.3-4        cli_3.0.1           rstudioapi_0.13    </span>
+<span class="co">#&gt; [16] yaml_2.2.2          parallel_4.1.1      mvtnorm_1.1-2      </span>
+<span class="co">#&gt; [19] pkgdown_1.6.1       xfun_0.29           fastmap_1.1.0      </span>
+<span class="co">#&gt; [22] coda_0.19-4         stringr_1.4.0       knitr_1.37         </span>
+<span class="co">#&gt; [25] desc_1.3.0          fs_1.5.0            sass_0.4.0         </span>
+<span class="co">#&gt; [28] systemfonts_1.0.2   stats4_4.1.1        rprojroot_2.0.2    </span>
+<span class="co">#&gt; [31] grid_4.1.1          R6_2.5.1            snow_0.4-3         </span>
+<span class="co">#&gt; [34] textshaping_0.3.5   bdsmatrix_1.3-4     emdbook_1.3.12     </span>
+<span class="co">#&gt; [37] VGAM_1.1-5          rmarkdown_2.11      magrittr_2.0.1     </span>
+<span class="co">#&gt; [40] htmltools_0.5.2     MASS_7.3-54         splines_4.1.1      </span>
+<span class="co">#&gt; [43] bbmle_1.0.24        numDeriv_2016.8-1.1 dgof_1.2           </span>
+<span class="co">#&gt; [46] ragg_1.1.3          stringi_1.7.6       pscl_1.5.5         </span>
+<span class="co">#&gt; [49] cachem_1.0.6        crayon_1.5.0</span></code></pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

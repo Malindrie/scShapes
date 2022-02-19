@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ks_test — ks_test • scShapes</title>
+<title>change_shape — change_shape • scShapes</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,10 @@
 
 
 
-<meta property="og:title" content="ks_test — ks_test" />
-<meta property="og:description" content="This function is used to perform Kolmogorv-Smirnov test on the
-filtered sparse counts matrix from filter_counts to select genes
-belonging to the family of ZINB distributions" />
+<meta property="og:title" content="change_shape — change_shape" />
+<meta property="og:description" content="This function returns a list of genes changing shape between conditions and
+the list of genes changing distribution from a unimodal to distribution to
+a zero-inflated distribution" />
 
 
 
@@ -125,69 +125,38 @@ belonging to the family of ZINB distributions" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>ks_test</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Malindrie/scShapes/blob/master/R/ks_test.R'><code>R/ks_test.R</code></a></small>
-    <div class="hidden name"><code>ks_test.Rd</code></div>
+    <h1>change_shape</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Malindrie/scShapes/blob/master/R/change_shape.R'><code>R/change_shape.R</code></a></small>
+    <div class="hidden name"><code>change_shape.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is used to perform Kolmogorv-Smirnov test on the
-filtered sparse counts matrix from <code>filter_counts</code> to select genes
-belonging to the family of ZINB distributions</p>
+    <p>This function returns a list of genes changing shape between conditions and
+the list of genes changing distribution from a unimodal to distribution to
+a zero-inflated distribution</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ks_test</span><span class='op'>(</span><span class='va'>counts</span>, <span class='va'>cexpr</span>, <span class='va'>lib.size</span>, formula <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>BPPARAM</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>change_shape</span><span class='op'>(</span><span class='va'>shapes_genes</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>counts</th>
-      <td><p>A non-negative integer matrix of scRNA-seq filtered read counts
-from <code>filter_counts</code>.
-The rows of the matrix are genes and columns are samples/cells.</p></td>
-    </tr>
-    <tr>
-      <th>cexpr</th>
-      <td><p>A dataframe that contains the covariate values.
-The rows of the dataframe are the corresponding samples/cells from the counts
-matrix from <code>filter_counts</code>.
-The cells of the dataframe are the covariates to be included in the GLM.</p></td>
-    </tr>
-    <tr>
-      <th>lib.size</th>
-      <td><p>A numeric vector that contains the total number of counts
-per cell from the counts matrix from <code>filter_counts</code>.</p></td>
-    </tr>
-    <tr>
-      <th>formula</th>
-      <td><p>A regression formula to fit the covariates in the ZINB GLM.</p></td>
-    </tr>
-    <tr>
-      <th>BPPARAM</th>
-      <td><p>configuration parameter related to the method of parallel execution.
-For further information on how to set-up parallel execution refer to
-<code>BiocParallel</code> vignette.</p></td>
+      <th>shapes_genes</th>
+      <td><p>A dataframe consisting of distributions followed by
+each gene passing the KS test. Where rows are genes and each column the
+treatment condition.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>List object containing the p-values from the
-KS test.</p>
+    <p>A list of two lists with genes changing distribution shape between
+conditions. The list "All" contains all the genes changing distribution.
+The list "Uni2ZI" contains the genes changing distribution form a unimodal
+distribution in one condition to a zero-inflated distribution in another
+condition.</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'>#' # load toy  example data</span>
-
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>scData</span><span class='op'>)</span>
-
-<span class='co'># apply the ks_test function to subset genes belonging to the</span>
-<span class='co'># family of ZINB distributions.</span>
-
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/Bioconductor/BiocParallel'>BiocParallel</a></span><span class='op'>)</span>
-<span class='va'>scData_KS</span> <span class='op'>&lt;-</span> <span class='fu'>ks_test</span><span class='op'>(</span>counts<span class='op'>=</span><span class='va'>scData</span><span class='op'>$</span><span class='va'>counts</span>, cexpr<span class='op'>=</span><span class='va'>scData</span><span class='op'>$</span><span class='va'>covariates</span>, lib.size<span class='op'>=</span><span class='va'>scData</span><span class='op'>$</span><span class='va'>lib_size</span>, BPPARAM<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/pkg/BiocParallel/man/register.html'>bpparam</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Formulating the additive model...</span></div><div class='output co'>#&gt; <span class='message'>Performing the KS test...</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

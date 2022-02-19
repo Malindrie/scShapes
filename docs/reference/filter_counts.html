@@ -73,7 +73,7 @@ only keep genes with a certain number of nonzero entries." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">scShapes</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -99,6 +99,9 @@ only keep genes with a certain number of nonzero entries." />
       <a href="../articles/vignette_scShapes.html">The vignette for running  scShapes</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -153,6 +156,17 @@ proportion of zeros per gene in the processed dataset.</p></td>
     <p>An object of class <code>Matrix</code> with genes removed if
 they have more than <code>perc.zero</code> zeros.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='co'># load toy  example data</span>
+
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>scData</span><span class='op'>)</span>
+
+<span class='co'># apply the filter_counts function to filter out genes if they have</span>
+<span class='co'># more than 10% zero</span>
+
+<span class='va'>scData_filt</span> <span class='op'>&lt;-</span> <span class='fu'>filter_counts</span><span class='op'>(</span><span class='va'>scData</span><span class='op'>$</span><span class='va'>counts</span>, perc.zero <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
