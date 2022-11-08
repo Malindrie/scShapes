@@ -27,7 +27,7 @@ ks_test."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -65,7 +65,7 @@ ks_test."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ks_sig</span><span class="op">(</span><span class="va">ks.pval.unadj</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ks_sig</span><span class="op">(</span><span class="va">ks.pval.unadj</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -73,30 +73,33 @@ ks_test."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
     <dl><dt>ks.pval.unadj</dt>
 <dd><p>The output from <code>ks_test</code> which is a list
 of p-values from the KS test with gene names.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>List object containing the significant gene indices from the KS test,
+    
+
+<p>List object containing the significant gene indices from the KS test,
 their adjusted p-values</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">scData</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># apply the ks_test function to subset genes belonging to the</span></span>
-<span class="r-in"><span class="co"># family of ZINB distributions.</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="va">scData_KS</span> <span class="op">&lt;-</span> <span class="fu"><a href="ks_test.html">ks_test</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">counts</span>, cexpr<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">covariates</span>, lib.size<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">lib_size</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">bpparam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">scData</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># apply the ks_test function to subset genes belonging to the</span></span></span>
+<span class="r-in"><span><span class="co"># family of ZINB distributions.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Bioconductor/BiocParallel" class="external-link">BiocParallel</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">scData_KS</span> <span class="op">&lt;-</span> <span class="fu"><a href="ks_test.html">ks_test</a></span><span class="op">(</span>counts<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">counts</span>, cexpr<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">covariates</span>, lib.size<span class="op">=</span><span class="va">scData</span><span class="op">$</span><span class="va">lib_size</span>, BPPARAM<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/BiocParallel/man/register.html" class="external-link">bpparam</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Formulating the additive model...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Performing the KS test...</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># apply the ks_sig function to select genes significant from</span></span>
-<span class="r-in"><span class="co"># the Kolmogorov Smirnov test.</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">scData_KS_sig</span> <span class="op">&lt;-</span> <span class="fu">ks_sig</span><span class="op">(</span><span class="va">scData_KS</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># apply the ks_sig function to select genes significant from</span></span></span>
+<span class="r-in"><span><span class="co"># the Kolmogorov Smirnov test.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">scData_KS_sig</span> <span class="op">&lt;-</span> <span class="fu">ks_sig</span><span class="op">(</span><span class="va">scData_KS</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -111,7 +114,7 @@ their adjusted p-values</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
