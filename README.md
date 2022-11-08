@@ -21,7 +21,7 @@ Negative Binomial (NB), Zero-inflated Poisson (ZIP) and Zero-inflated
 Negative Binomial (ZINB) with log link function and model based
 normalization for differences in sequencing depth. Since all four
 distributions considered in our framework belong to the same family of
-distributions, we first perform a Kolmogorov-Smirnov (KS) test to select
+distributions, we first perform a Kolmogorov-Smirnov test to select
 genes belonging to the family of ZINB distributions. Genes passing the
 KS test will be then modeled using GLMs. Model selection is done by
 calculating the Bayesian Information Criterion and likelihood ratio test
@@ -78,6 +78,7 @@ We first filter the genes to keep only genes expressed in at least 10%
 of cells:
 
 ``` r
+
 #First extract the RNA-seq counts from the 'RNA' assay of the seurat object
 ifnb.obj <- lapply(ifnb.list, function (x) as.matrix(x@assays$RNA@counts))
 ifnb.filtered <- lapply(ifnb.obj, function (x) filter_counts(x, perc.zero = 0.1))
@@ -110,6 +111,7 @@ selected 20 common genes under both treatment conditions ‘CTRL’ and
 ‘STIM’.
 
 ``` r
+
 #Randomly select 20 genes among common genes between the two treatment conditions
 comm.genes <- intersect(rownames(ifnb.filtered$CTRL), rownames(ifnb.filtered$STIM))
 comm.20.genes <- sample(comm.genes, 20, replace = FALSE)
